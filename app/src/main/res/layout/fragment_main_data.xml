@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:orientation="vertical"
+    >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        >
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            >
+
+            <TableRow
+                style="@style/MainDataFragmentTableRow"
+                >
+
+                <TextView
+                    style="@style/MainDataFragmentFirstColumnHeadings"
+                    android:text="@string/id"
+                    />
+
+                <TextView
+                    android:id="@+id/FragmentMainData_id_textview"
+                    style="@style/MainDataFragmentSecondColumn"
+                    android:text="ID"
+                    />
+
+            </TableRow>
+
+            <TableRow
+                style="@style/MainDataFragmentTableRow"
+                >
+
+                <TextView
+                    style="@style/MainDataFragmentFirstColumnHeadings"
+                    android:text="@string/tag_"
+                    />
+
+                <AutoCompleteTextView
+                    android:id="@+id/FragmentMainData_tag_edittext"
+                    style="@style/MainDataFragmentSecondColumn"
+                    android:hint="@string/enter_tag"
+                    android:singleLine="true"
+                    />
+
+            </TableRow>
+
+            <TableRow
+                style="@style/MainDataFragmentTableRow"
+                >
+
+                <TextView
+                    style="@style/MainDataFragmentFirstColumnHeadings"
+                    android:text="@string/date_"/>
+
+                <TextView
+                    android:id="@+id/FragmentMainData_set_date_textview"
+                    style="@style/MainDataFragmentSecondColumn"
+                    android:gravity="center"
+                    />
+                />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/MainDataFragment_meta_date_tablerow"
+                style="@style/MainDataFragmentTableRow"
+                android:visibility="gone"
+                >
+
+                <TextView
+                    style="@style/MainDataFragmentFirstColumnHeadings"
+                    android:text="Meta Date:"/>
+
+                <TextView
+                    android:id="@+id/FragmentMainData_meta_date_textview"
+                    style="@style/MainDataFragmentSecondColumn"
+                    android:gravity="center"
+                    />
+                />
+
+            </TableRow>
+
+
+            <TableRow
+                style="@style/MainDataFragmentTableRow"
+                >
+
+                <TextView
+                    style="@style/MainDataFragmentFirstColumnHeadings"
+                    android:text="@string/time_"/>
+
+                <TextView
+                    android:id="@+id/FragmentMainData_set_time_textview"
+                    style="@style/MainDataFragmentSecondColumn"
+                    android:gravity="center"
+                    />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/MainDataFragment_meta_time_tablerow"
+                style="@style/MainDataFragmentTableRow"
+                android:visibility="gone"
+                >
+
+                <TextView
+                    style="@style/MainDataFragmentFirstColumnHeadings"
+                    android:text="Meta Time:"/>
+
+                <TextView
+                    android:id="@+id/FragmentMainData_meta_time_textview"
+                    style="@style/MainDataFragmentSecondColumn"
+                    android:gravity="center"
+                    />
+            </TableRow>
+
+
+            <TableRow
+                style="@style/MainDataFragmentTableRow"
+                >
+
+                <TextView
+                    style="@style/MainDataFragmentFirstColumnHeadings"
+                    android:text="@string/location_"
+                    android:singleLine="true"
+                    />
+
+                <TextView
+                    android:id="@+id/FragmentMainData_address_textview"
+                    style="@style/MainDataFragmentSecondColumn"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+
+                    />
+
+                <ProgressBar
+                    android:id="@+id/FragmentMainData_address_progress_bar"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".8"
+                    android:background="@android:color/black"
+
+                    />
+
+            </TableRow>
+
+
+            <TableRow
+                style="@style/MainDataFragmentTableRow"
+                >
+
+                <TextView
+                    style="@style/MainDataFragmentFirstColumnHeadings"
+                    android:text="Notes"/>
+
+                <EditText
+                    android:id="@+id/FragmentMainData_notes_edittext"
+                    style="@style/MainDataFragmentSecondColumn"
+                    android:gravity="left|top"
+                    android:hint="@string/enter_notes"
+                    android:lines="5"
+                    android:maxLines="5"
+
+                    />
+
+            </TableRow>
+
+
+
+            <TableRow
+                style="@style/MainDataFragmentTableRow"
+                android:gravity="center"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    >
+
+                    <Button
+                        android:id="@+id/FragmentMainData_save_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:text="Save"
+                        />
+
+                    <Button
+                        android:id="@+id/FragmentMainData_report_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Report"
+                        />
+
+                    <Button
+                        android:id="@+id/FragmentMainData_expand_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Expand"
+                        />
+
+                </LinearLayout></TableRow>
+        </TableLayout>
+    </ScrollView>
+
+
+</LinearLayout>

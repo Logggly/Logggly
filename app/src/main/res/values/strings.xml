@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Logggly</string>
+    <string name="enter_tag">Enter tag</string>
+    <string name="enter_notes">Enter notes</string>
+    <string name="please_wait">Please wait...</string>
+    <string name="service_not_available">Service not available</string>
+    <string name="invalid_lat_long_used">Invalid lat long used</string>
+    <string name="no_address_found">No address found</string>
+    <string name="address_found">Address found</string>
+    <string name="location_not_available">Location not available</string>
+    <string name="please_enter_tag">Please enter tag</string>
+    <string name="please_enter_notes">Please enter notes</string>
+    <string name="new_tag_created_successfully">New tag created successfully</string>
+    <string name="Null">Null</string>
+    <string name="tag">Tag</string>
+    <string name="yes">Yes</string>
+    <string name="id">ID:</string>
+    <string name="tag_">Tag:</string>
+    <string name="date_">Date:</string>
+    <string name="time_">Time:</string>
+    <string name="location_">Location:</string>
+    <string name="delete">Delete</string>
+    <string name="event_detail">Event Detail</string>
+    <string name="update">Update</string>
+    <string name="new_tag">New Tag</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
