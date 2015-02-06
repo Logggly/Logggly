@@ -57,7 +57,7 @@ public class PagerReportDetailFragment extends AbstractLoggglyFragment implement
         return new CursorLoader(getActivity(),
                 DatabaseContract.Tasks.CONTENT_URI,
                 null, null, null,
-                DatabaseContract.Tasks.COLUMN_DATE_TIME + " DESC");
+                DatabaseContract.Tasks.COLUMN_TAG+","+DatabaseContract.Tasks.COLUMN_DATE_TIME + " ASC");
 
     }
 

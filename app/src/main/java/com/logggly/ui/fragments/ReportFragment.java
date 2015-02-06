@@ -98,12 +98,12 @@ public class ReportFragment extends AbstractLoggglyFragment implements
                     return new CursorLoader(getActivity(),
                             DatabaseContract.Tasks.buildUriAgainstTagName(mTagName),
                             null, null, null,
-                            DatabaseContract.Tasks.COLUMN_DATE_TIME + " DESC");
+                            DatabaseContract.Tasks.COLUMN_TAG+","+DatabaseContract.Tasks.COLUMN_DATE_TIME + " ASC");
                 }else {
                     return new CursorLoader(getActivity(),
                             DatabaseContract.Tasks.CONTENT_URI,
                             null, null, null,
-                            DatabaseContract.Tasks.COLUMN_DATE_TIME + " DESC");
+                            DatabaseContract.Tasks.COLUMN_TAG+","+DatabaseContract.Tasks.COLUMN_DATE_TIME + " ASC");
                 }
         }
         return null;
@@ -114,7 +114,7 @@ public class ReportFragment extends AbstractLoggglyFragment implements
         switch (loader.getId()){
             case TASK_LOADER:
                 mTasksAdapter.swapCursor(data);
-                mTasksListView.setAdapter(mTasksAdapter);
+//                mTasksListView.setAdapter(mTasksAdapter);
                 break;
         }
     }

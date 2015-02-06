@@ -15,8 +15,25 @@
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             >
+            <TableRow
+                style="@style/MainDataFragmentTableRow"
+                >
+
+                <TextView
+                    style="@style/MainDataFragmentFirstColumnHeadings"
+                    android:text="Voice Status:"
+                    android:layout_weight=".5"
+                    />
+
+                <TextView
+                    android:id="@+id/FragmentMainData_voice_textview"
+                    style="@style/MainDataFragmentSecondColumn"
+                    android:text="Available"
+                    />
+
+            </TableRow>
+
 
             <TableRow
                 style="@style/MainDataFragmentTableRow"
@@ -49,6 +66,7 @@
                     style="@style/MainDataFragmentSecondColumn"
                     android:hint="@string/enter_tag"
                     android:singleLine="true"
+                    android:completionThreshold="1"
                     />
 
             </TableRow>

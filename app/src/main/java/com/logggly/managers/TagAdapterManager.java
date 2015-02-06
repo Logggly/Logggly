@@ -62,11 +62,11 @@ public class TagAdapterManager {
            if(isFilter == false){
                return new CursorLoader(mFragmentActivity,
                        DatabaseContract.Tags.CONTENT_URI,
-                       null,null,null,null);
+                       null,null,null,DatabaseContract.Tags.COLUMN_NAME+ " ASC");
            }else{
                return new CursorLoader(mFragmentActivity,
                        DatabaseContract.Tags.buildUriForIncompleteTagSearch(filterString),
-                       null,null,null,null);
+                       null,null,null,DatabaseContract.Tags.COLUMN_NAME+ " ASC");
            }
        }
 
