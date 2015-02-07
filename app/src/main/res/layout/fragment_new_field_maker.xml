@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Field Maker For Tag"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textSize="@dimen/sp20"
+        />
+
+    <EditText
+        android:id="@+id/FragmentNewFieldCreator_field_name_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter field Name"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <Spinner
+            android:id="@+id/FragmentNewFieldCreator_field_type_spinner"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:prompt="@string/choose_type"
+
+            >
+
+            </Spinner>
+
+        <Button
+            android:id="@+id/FragmentNewFieldCreator_add_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"/>
+    </LinearLayout>
+    <ListView
+        android:layout_weight="1"
+        android:id="@+id/FragmentNewFieldCreator_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></ListView>
+    <Button
+        android:id="@+id/FragmentNewFieldCreator_done_button"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Done"/>
+</LinearLayout>

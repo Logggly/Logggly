@@ -91,7 +91,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     private Calendar mCalendar;
     private DateTimeManager mDateTimeManager;
     private TagAdapterManager mTagAdapterManager;
-    private VoiceUtility mVoiceUtility;
+//    private VoiceUtility mVoiceUtility;
 
     public MainDataFragment() {
     }
@@ -108,7 +108,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         mCalendar = Calendar.getInstance();
         mDateTimeManager = new DateTimeManager(mCalendar,getActivity(),this);
         mTagAdapterManager = new TagAdapterManager(getActivity());
-        mVoiceUtility = VoiceUtility.getInstance(getActivity());
+//        mVoiceUtility = VoiceUtility.getInstance(getActivity());
     }
 
 
@@ -118,7 +118,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,mLocationRequest,this);
         mGoogleApiClient.disconnect();
         mTagAdapterManager.destroyLoader();
-        mVoiceUtility.setCallback(null);
+//        mVoiceUtility.setCallback(null);
     }
 
     @Nullable
@@ -126,7 +126,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_data,container,false);
         mGoogleApiClient.connect();
-        mVoiceUtility.setCallback(mVoiceUtilityCallback);
+//        mVoiceUtility.setCallback(mVoiceUtilityCallback);
         mVoiceStatusTextView = (TextView) view.findViewById(R.id.FragmentMainData_voice_textview);
         mAddressTextView = (TextView) view.findViewById(R.id.FragmentMainData_address_textview);
         mAddressProgressBar = (ProgressBar) view.findViewById(R.id.FragmentMainData_address_progress_bar);
@@ -199,6 +199,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
 
 
     private AlertDialog mNewTagCreatorAlertDialog;
+    private boolean newFieldsIsChecked = false;
     private View.OnClickListener mSaveButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -210,11 +211,17 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
                 Cursor cursor = getActivity().getContentResolver().query(DatabaseContract.Tags.buildUriForSearchTag(tagText), null, null, null, null);
                 if (cursor.getCount() == 0) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle(getString(R.string.tag));
-                    builder.setMessage(getString(R.string.new_tag));
+                    builder.setTitle(getString(R.string.new_tag));
+//                    builder.setMessage(getString(R.string.new_tag));
+                    builder.setMultiChoiceItems(R.array.additional_fields,new boolean[]{newFieldsIsChecked},new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                            newFieldsIsChecked = isChecked;
+                        }
+                    });
                     final String finalTagText = tagText;
                     builder.setPositiveButton(getString(R.string.yes), newTagCreatorDialogYesClickListener);
-                    builder.setNegativeButton("No", newTagCreatorDialogNoClickListener);
+                    builder.setNegativeButton(getString(R.string.no), newTagCreatorDialogNoClickListener);
                     mNewTagCreatorAlertDialog = builder.create();
                     mNewTagCreatorAlertDialog.show();
                 }else{
@@ -231,6 +238,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
             public void onClick(DialogInterface dialog, int which) {
 //                            mTagEditText.setText("");
                 dialog.dismiss();
+                newFieldsIsChecked = false;
             }
         };
 
@@ -238,13 +246,24 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     private DialogInterface.OnClickListener newTagCreatorDialogYesClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(DatabaseContract.Tags.COLUMN_NAME, mTagEditText.getText().toString().trim().toLowerCase());
-                Uri newUri = getActivity().getContentResolver().insert(DatabaseContract.Tags.CONTENT_URI, contentValues);
-                if (ContentUris.parseId(newUri) > 0) {
-                    saveTask(mTagEditText.getText().toString().trim().toLowerCase());
+                if(newFieldsIsChecked){
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.MainActivity_container_framelayout
+                            , NewFieldMakerFragment.newInstance())
+                            .addToBackStack(null)
+                            .commit();
+
+                }else {
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(DatabaseContract.Tags.COLUMN_NAME, mTagEditText.getText().toString().trim().toLowerCase());
+                    Uri newUri = getActivity().getContentResolver().insert(DatabaseContract.Tags.CONTENT_URI, contentValues);
+                    if (ContentUris.parseId(newUri) > 0) {
+                        saveTask(mTagEditText.getText().toString().trim().toLowerCase());
+                    }
                 }
                 dialog.dismiss();
+                newFieldsIsChecked = false;
             }
         };
 
