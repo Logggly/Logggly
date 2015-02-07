@@ -15,6 +15,8 @@ import java.util.Locale;
  */
 public class LoggglyApplication extends Application {
 
+
+
     public static Context CONTEXT;
     @Override
     public void onCreate() {
