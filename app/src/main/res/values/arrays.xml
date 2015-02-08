@@ -4,10 +4,11 @@
     <string-array name="field_types">
         <item>Alphanumeric</item>
         <item>Duration</item>
-        <item>Picture</item>
-        <item>Video</item>
-        <item>Audio</item>
+        <!--<item>Picture</item>-->
+        <!--<item>Video</item>-->
+        <!--<item>Audio</item>-->
         <item>URL</item>
+        <!--<item>Documents</item>-->
     </string-array>
 
     <string-array name="additional_fields">

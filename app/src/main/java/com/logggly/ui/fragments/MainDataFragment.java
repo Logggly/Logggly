@@ -27,6 +27,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,10 +42,15 @@ import com.logggly.background.services.FetchAddressIntentService;
 import com.logggly.databases.DatabaseContract;
 import com.logggly.managers.DateTimeManager;
 import com.logggly.managers.TagAdapterManager;
+import com.logggly.ui.customviews.CustomViewCreator;
 import com.logggly.utilities.DateTimeFormatter;
 import com.logggly.utilities.PrefrenceUtility;
 import com.logggly.utilities.TimeOfDayUtility;
 import com.logggly.utilities.VoiceUtility;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,6 +70,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     public static final String TAG = MainDataFragment.class.getSimpleName();
     private LocationRequest mLocationRequest;
     private TextView mVoiceStatusTextView;
+    private JSONArray mAdditionalFieldJSONArray;
 
     public static final MainDataFragment newInstance(){
         MainDataFragment mainDataFragment = new MainDataFragment();
@@ -84,6 +91,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     private TableRow mMetaTimeTableRow;
     private TextView mMetaTimeTextView;
     private Button mExpandButton;
+    private TableLayout mTableLayout;
 
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
@@ -92,6 +100,8 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     private DateTimeManager mDateTimeManager;
     private TagAdapterManager mTagAdapterManager;
 //    private VoiceUtility mVoiceUtility;
+
+    private int mCompulsoryViewsCount;
 
     public MainDataFragment() {
     }
@@ -124,48 +134,100 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main_data,container,false);
+        View mRootView = inflater.inflate(R.layout.fragment_main_data,container,false);
+        mTableLayout = (TableLayout) mRootView.findViewById(R.id.FragmentMainData_table_layout);
+        mCompulsoryViewsCount = mTableLayout.getChildCount();
         mGoogleApiClient.connect();
 //        mVoiceUtility.setCallback(mVoiceUtilityCallback);
-        mVoiceStatusTextView = (TextView) view.findViewById(R.id.FragmentMainData_voice_textview);
-        mAddressTextView = (TextView) view.findViewById(R.id.FragmentMainData_address_textview);
-        mAddressProgressBar = (ProgressBar) view.findViewById(R.id.FragmentMainData_address_progress_bar);
+        mVoiceStatusTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_voice_textview);
+        mAddressTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_address_textview);
+        mAddressProgressBar = (ProgressBar) mRootView.findViewById(R.id.FragmentMainData_address_progress_bar);
      
-        mIdTextView = (TextView) view.findViewById(R.id.FragmentMainData_id_textview);
+        mIdTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_id_textview);
         mIdTextView.setText((PrefrenceUtility.getTaskCurrentId() + 1) + "");
-        mTagEditText = (AutoCompleteTextView) view.findViewById(R.id.FragmentMainData_tag_edittext);
+        mTagEditText = (AutoCompleteTextView) mRootView.findViewById(R.id.FragmentMainData_tag_edittext);
         autoCompleteTagInit();
 //        mTagEditText.setOnFocusChangeListener(mOnFocusChangeListener);
-        mNotesEditText = (EditText) view.findViewById(R.id.FragmentMainData_notes_edittext);
-        mSaveButton = (Button) view.findViewById(R.id.FragmentMainData_save_button);
+        mNotesEditText = (EditText) mRootView.findViewById(R.id.FragmentMainData_notes_edittext);
+        mSaveButton = (Button) mRootView.findViewById(R.id.FragmentMainData_save_button);
         mSaveButton.setOnClickListener(mSaveButtonClickListener);
-        mReportButton = (Button) view.findViewById(R.id.FragmentMainData_report_button);
+        mReportButton = (Button) mRootView.findViewById(R.id.FragmentMainData_report_button);
         mReportButton.setOnClickListener(mReportClickListener);
-        mExpandButton = (Button) view.findViewById(R.id.FragmentMainData_expand_button);
+        mExpandButton = (Button) mRootView.findViewById(R.id.FragmentMainData_expand_button);
         mExpandButton.setOnClickListener(mExpandButtonClickListener);
 
-        mMetaDateTableRow = (TableRow)view.findViewById(R.id.MainDataFragment_meta_date_tablerow);
-        mSetDateTextView = (TextView) view.findViewById(R.id.FragmentMainData_set_date_textview);
-        mMetaDateTextView = (TextView) view.findViewById(R.id.FragmentMainData_meta_date_textview);
+        mMetaDateTableRow = (TableRow) mRootView.findViewById(R.id.MainDataFragment_meta_date_tablerow);
+        mSetDateTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_set_date_textview);
+        mMetaDateTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_meta_date_textview);
         mSetDateTextView.setOnClickListener(mDateTimeManager.getSetDateButtonOnClickListener());
         setDateTextView();
 
-        mMetaTimeTableRow = (TableRow)view.findViewById(R.id.MainDataFragment_meta_time_tablerow);
-        mSetTimeTextView = (TextView) view.findViewById(R.id.FragmentMainData_set_time_textview);
-        mMetaTimeTextView = (TextView) view.findViewById(R.id.FragmentMainData_meta_time_textview);
+        mMetaTimeTableRow = (TableRow) mRootView.findViewById(R.id.MainDataFragment_meta_time_tablerow);
+        mSetTimeTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_set_time_textview);
+        mMetaTimeTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_meta_time_textview);
         mSetTimeTextView.setOnClickListener(mDateTimeManager.getSetTimeButtonOnClickListener());
         setTimeTextView();
 
-        return view;
+        return mRootView;
     }
 
+    private View.OnFocusChangeListener mOnFocusChangeListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+
+            if (hasFocus == false && v.getId() == R.id.FragmentMainData_tag_edittext) {
+                if (mAdditionalFieldJSONArray != null) {
+                    Log.d(TAG, "Selected: " + mAdditionalFieldJSONArray.toString());
+                    CustomViewCreator.createViewForJSONArray(getActivity(),
+                            mTableLayout,mAdditionalFieldJSONArray,mCompulsoryViewsCount);
+                    additionalFieldsManager();
+                } else {
+                    Log.d(TAG, "Not Selected");
+                }
+            }
+        }
+    };
+
+    private void additionalFieldsManager() {
+        for (int i = 0 ; i < mAdditionalFieldJSONArray.length();i++){
+            JSONObject jsonObject = mAdditionalFieldJSONArray.optJSONObject(i);
+            String field = jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_TYPE);
+            if(field.equals(getString(R.string.alphanumeric))){
+
+            }
+            else if(field.equals(getString(R.string.url))){
+
+            }
+            else if(field.equals(getString(R.string.duration))){
+                TextView textView = (TextView) mTableLayout.findViewWithTag(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME));
+                textView.setOnClickListener(mDateTimeManager.getSetTimeButtonOnClickListener());
+            }
+
+        }
+    }
+
+
     private void autoCompleteTagInit() {
+        mTagEditText.setOnFocusChangeListener(mOnFocusChangeListener);
         mTagEditText.setAdapter(mTagAdapterManager.getAdapter());
         mTagAdapterManager.initLoader();
         mTagAdapterManager.getAdapter().setCursorToStringConverter(new SimpleCursorAdapter.CursorToStringConverter() {
             @Override
             public CharSequence convertToString(Cursor cursor) {
-                return cursor.getString(cursor.getColumnIndex(DatabaseContract.Tags.COLUMN_NAME));
+                String tagName = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tags.COLUMN_NAME));
+
+                String additionalFields = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tags.COLUMN_ADDITIONAL_FIELDS));
+                if(additionalFields!=null && !additionalFields.isEmpty()) {
+                    try {
+                        mAdditionalFieldJSONArray = new JSONArray(additionalFields);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    mAdditionalFieldJSONArray = null;
+                }
+
+            return tagName;
             }
         });
         mTagEditText.addTextChangedListener(new TextWatcher() {
@@ -250,22 +312,26 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.MainActivity_container_framelayout
-                            , NewFieldMakerFragment.newInstance())
+                            , NewFieldMakerFragment.newInstance(getTagText()))
                             .addToBackStack(null)
                             .commit();
 
                 }else {
                     ContentValues contentValues = new ContentValues();
-                    contentValues.put(DatabaseContract.Tags.COLUMN_NAME, mTagEditText.getText().toString().trim().toLowerCase());
+                    contentValues.put(DatabaseContract.Tags.COLUMN_NAME, getTagText());
                     Uri newUri = getActivity().getContentResolver().insert(DatabaseContract.Tags.CONTENT_URI, contentValues);
                     if (ContentUris.parseId(newUri) > 0) {
-                        saveTask(mTagEditText.getText().toString().trim().toLowerCase());
+                        saveTask(getTagText());
                     }
                 }
                 dialog.dismiss();
                 newFieldsIsChecked = false;
             }
         };
+
+    private String getTagText() {
+        return mTagEditText.getText().toString().trim().toLowerCase();
+    }
 
 
     private void saveTask(String tagText) {

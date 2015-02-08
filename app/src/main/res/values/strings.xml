@@ -32,4 +32,13 @@
     <string name="please_enter_field_name">Please enter field name</string>
     <string name="choose_type">Choose type</string>
 
+    <!-- -->
+    <string name="alphanumeric">Alphanumeric</string>
+    <string name="duration">Duration</string>
+    <!--<item>Picture</item>-->
+    <!--<item>Video</item>-->
+    <!--<item>Audio</item>-->
+    <string name="url">URL</string>
+    <!--<item>Documents</item>-->
+
 </resources>

@@ -1,5 +1,8 @@
 package com.logggly.ui.fragments;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -15,18 +18,28 @@ import android.widget.Toast;
 
 import com.logggly.R;
 import com.logggly.adapters.NewFieldMakerAdapter;
+import com.logggly.databases.DatabaseContract;
 import com.logggly.models.NewFieldMakerModel;
 
-import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import static com.logggly.databases.DatabaseContract.AdditionalFieldsJSONManager;
 
 /**
  * Created by Hafiz Waleed Hussain on 2/7/2015.
  */
 public class NewFieldMakerFragment extends AbstractLoggglyFragment{
 
+    private static final String TAG_NAME = "tagName";
 
-    public static final NewFieldMakerFragment newInstance(){
-        return new NewFieldMakerFragment();
+    public static final NewFieldMakerFragment newInstance(String tagName){
+        NewFieldMakerFragment newFieldMakerFragment = new NewFieldMakerFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(TAG_NAME,tagName);
+        newFieldMakerFragment.setArguments(bundle);
+        return newFieldMakerFragment;
     }
 
     private EditText mFieldNameEditText;
@@ -35,6 +48,8 @@ public class NewFieldMakerFragment extends AbstractLoggglyFragment{
     private ListView mFieldsListView;
     private Button mDoneButton;
     private NewFieldMakerAdapter mListAdapter;
+
+    private String mTagName;
 
     private ArrayAdapter mSpinnerAdapter;
     @Override
@@ -46,7 +61,10 @@ public class NewFieldMakerFragment extends AbstractLoggglyFragment{
                 android.R.id.text1,
                 data);
         mListAdapter = new NewFieldMakerAdapter(getActivity());
+
+        mTagName = getArguments().getString(TAG_NAME);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -91,12 +109,31 @@ public class NewFieldMakerFragment extends AbstractLoggglyFragment{
     private View.OnClickListener mDoneButtonClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            try {
 
-            Toast.makeText(getActivity(), mListAdapter.getCount()+" : count",Toast.LENGTH_SHORT).show();
-            ArrayList<NewFieldMakerModel> data = new ArrayList<>(mListAdapter.getCount());
-            for (int i = 0; i < data.size();i++){
-                data.add(i,mListAdapter.getItem(i));
-                Toast.makeText(getActivity(), data.get(i).toString(),Toast.LENGTH_SHORT).show();
+            JSONArray jsonArray = new JSONArray();
+            for (int i = 0; i < mListAdapter.getCount();i++){
+                NewFieldMakerModel newFieldMakerModel = mListAdapter.getItem(i);
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put(AdditionalFieldsJSONManager.FIELD_NAME,
+                        newFieldMakerModel.getFieldName());
+                jsonObject.put(AdditionalFieldsJSONManager.FIELD_TYPE,
+                        newFieldMakerModel.getFieldType());
+                jsonArray.put(jsonObject);
+            }
+
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(DatabaseContract.Tags.COLUMN_NAME, mTagName);
+                contentValues.put(DatabaseContract.Tags.COLUMN_ADDITIONAL_FIELDS, jsonArray.toString());
+                Uri uri = getActivity().getContentResolver().insert(DatabaseContract.Tags.CONTENT_URI,contentValues);
+                if(ContentUris.parseId(uri) > 0){
+                    Toast.makeText(getActivity(),R.string.new_tag_created_successfully,Toast.LENGTH_SHORT).show();
+                }
+                getActivity().onBackPressed();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
         }

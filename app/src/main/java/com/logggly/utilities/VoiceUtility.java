@@ -33,9 +33,9 @@ public class VoiceUtility implements RecognitionListener{
     private static VoiceUtility voiceUtility;
 
     public static VoiceUtility getInstance(FragmentActivity fragmentActivity){
-        if(voiceUtility == null){
-            voiceUtility = new VoiceUtility(fragmentActivity);
-        }
+//        if(voiceUtility == null){
+//            voiceUtility = new VoiceUtility(fragmentActivity);
+//        }
         return voiceUtility;
     }
 

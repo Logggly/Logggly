@@ -11,8 +11,13 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
         <TableLayout
+            android:id="@+id/FragmentMainData_table_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             >
@@ -33,8 +38,6 @@
                     />
 
             </TableRow>
-
-
             <TableRow
                 style="@style/MainDataFragmentTableRow"
                 >
@@ -51,7 +54,6 @@
                     />
 
             </TableRow>
-
             <TableRow
                 style="@style/MainDataFragmentTableRow"
                 >
@@ -70,7 +72,6 @@
                     />
 
             </TableRow>
-
             <TableRow
                 style="@style/MainDataFragmentTableRow"
                 >
@@ -87,7 +88,6 @@
                 />
 
             </TableRow>
-
             <TableRow
                 android:id="@+id/MainDataFragment_meta_date_tablerow"
                 style="@style/MainDataFragmentTableRow"
@@ -106,8 +106,6 @@
                 />
 
             </TableRow>
-
-
             <TableRow
                 style="@style/MainDataFragmentTableRow"
                 >
@@ -122,7 +120,6 @@
                     android:gravity="center"
                     />
             </TableRow>
-
             <TableRow
                 android:id="@+id/MainDataFragment_meta_time_tablerow"
                 style="@style/MainDataFragmentTableRow"
@@ -139,8 +136,6 @@
                     android:gravity="center"
                     />
             </TableRow>
-
-
             <TableRow
                 style="@style/MainDataFragmentTableRow"
                 >
@@ -172,8 +167,6 @@
                     />
 
             </TableRow>
-
-
             <TableRow
                 style="@style/MainDataFragmentTableRow"
                 >
@@ -193,45 +186,38 @@
                     />
 
             </TableRow>
-
-
-
-            <TableRow
-                style="@style/MainDataFragmentTableRow"
+        </TableLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center"
+                android:orientation="horizontal"
                 >
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <Button
+                    android:id="@+id/FragmentMainData_save_button"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    >
+                    android:enabled="false"
+                    android:text="Save"
+                    />
 
-                    <Button
-                        android:id="@+id/FragmentMainData_save_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:enabled="false"
-                        android:text="Save"
-                        />
+                <Button
+                    android:id="@+id/FragmentMainData_report_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Report"
+                    />
 
-                    <Button
-                        android:id="@+id/FragmentMainData_report_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Report"
-                        />
+                <Button
+                    android:id="@+id/FragmentMainData_expand_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Expand"
+                    />
 
-                    <Button
-                        android:id="@+id/FragmentMainData_expand_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Expand"
-                        />
-
-                </LinearLayout></TableRow>
-        </TableLayout>
+            </LinearLayout>
+        </LinearLayout>
     </ScrollView>
 
 

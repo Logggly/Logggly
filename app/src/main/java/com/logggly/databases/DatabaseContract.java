@@ -39,6 +39,8 @@ public class DatabaseContract {
         public static final String COLUMN_CREATED_AT = "created_at";
         /** Table column name constant*/
         public static final String COLUMN_DATE_TIME = "date_time";
+        /** Table column name constant*/
+        public static final String COLUMN_ADDITIONAL_FIELDS = "additional_fields";
 
         /** Mime types*/
         public static final String CONTENT_TYPE =
@@ -72,6 +74,7 @@ public class DatabaseContract {
                 "%s TEXT NOT NULL COLLATE NOCASE," +
                 "%s TEXT NOT NULL," +
                 "%s TEXT NOT NULL," +
+                "%s TEXT," +
                 "%s FLOAT," +
                 "%s FLOAT," +
                 "%s DATETIME," +
@@ -81,6 +84,7 @@ public class DatabaseContract {
                 COLUMN_TAG,
                 COLUMN_NOTES,
                 COLUMN_LOCATION_NAME,
+                COLUMN_ADDITIONAL_FIELDS,
                 COLUMN_LATITUDE,
                 COLUMN_LONGITUDE,
                 COLUMN_DATE_TIME,
@@ -99,6 +103,8 @@ public class DatabaseContract {
         public static final String TABLE_NAME = "Tags";
         /** Table column name constant*/
         public static final String COLUMN_NAME = "name";
+        /** Table column name constant*/
+        public static final String COLUMN_ADDITIONAL_FIELDS = "additional_fields";
 
         /** Mime types*/
         public static final String CONTENT_TYPE =
@@ -134,8 +140,23 @@ public class DatabaseContract {
         public static final String SQL_CREATE_TABLE = String.format("CREATE TABLE " +
                 "%s (" +
                 "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "%s TEXT NOT NULL" +
-                ");",TABLE_NAME,_ID, COLUMN_NAME);
+                "%s TEXT NOT NULL," +
+                "%s TEXT" +
+                ");",TABLE_NAME,_ID, COLUMN_NAME,COLUMN_ADDITIONAL_FIELDS);
 
     }
+
+
+    public static final class AdditionalFieldsJSONManager{
+
+        /** Table column name constant*/
+        public static final String FIELD_NAME = "fieldName";
+        /** Table column name constant*/
+        public static final String FIELD_TYPE = "fieldType";
+        /** Table column name constant*/
+        public static final String FIELD_DATA = "fieldData";
+
+
+    }
+
 }
