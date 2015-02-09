@@ -11,13 +11,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.logggly.R;
 import com.logggly.databases.DatabaseContract;
+import com.logggly.managers.AdditionalFieldsManager;
 import com.logggly.managers.DateTimeManager;
 import com.logggly.models.TaskModel;
+import com.logggly.ui.customviews.CustomViewCreator;
 
 import java.util.Calendar;
 
@@ -31,6 +34,8 @@ TimeFragment.Callback{
     private TextView dateTextView;
     private TextView timeTextView;
     private EditText notesEditText;
+    private TableLayout mParentLayoutForAdditionalFields;
+    private AdditionalFieldsManager mAdditionalFieldsManager;
 
     public static ReportDetailFragment newInstance(TaskModel taskModel){
         ReportDetailFragment reportDetailFragment = new ReportDetailFragment();
@@ -49,20 +54,23 @@ TimeFragment.Callback{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragent_dialog_report_detail, null);
-        DateTimeManager dateTimeManager = new DateTimeManager(taskModel.getCalendar(),getActivity(),this);
-        TextView idTextView = (TextView) view.findViewById(R.id.FragmentDialogReportDetail_id_textview);
-        TextView tagTextView= (TextView) view.findViewById(R.id.FragmentDialogReportDetail_tag_textview);
-        dateTextView= (TextView) view.findViewById(R.id.FragmentDialogReportDetail_set_date_textview);
+        View view = inflater.inflate(R.layout.fragent_report_detail, null);
+        mParentLayoutForAdditionalFields = (TableLayout) view.findViewById(R.id.FragmentReportDetail_parent_tablelayout);
+        mAdditionalFieldsManager = new AdditionalFieldsManager(getActivity(),mParentLayoutForAdditionalFields,
+                getActivity().getSupportFragmentManager());
+        DateTimeManager dateTimeManager = new DateTimeManager(taskModel.getCalendar(),getActivity().getSupportFragmentManager(),this,this);
+        TextView idTextView = (TextView) view.findViewById(R.id.FragmentReportDetail_id_textview);
+        TextView tagTextView= (TextView) view.findViewById(R.id.FragmentReportDetail_tag_textview);
+        dateTextView= (TextView) view.findViewById(R.id.FragmentReportDetail_set_date_textview);
         dateTextView.setOnClickListener(dateTimeManager.getSetDateButtonOnClickListener());
-        timeTextView= (TextView) view.findViewById(R.id.FragmentDialogReportDetail_set_time_textview);
+        timeTextView= (TextView) view.findViewById(R.id.FragmentReportDetail_set_time_textview);
         timeTextView.setOnClickListener(dateTimeManager.getSetTimeButtonOnClickListener());
         timeTextView.setOnClickListener(dateTimeManager.getSetTimeButtonOnClickListener());
-        TextView addressTextView= (TextView) view.findViewById(R.id.FragmentDialogReportDetail_address_textview);
-        notesEditText = (EditText) view.findViewById(R.id.FragmentDialogReportDetail_notes_edittext);
+        TextView addressTextView= (TextView) view.findViewById(R.id.FragmentReportDetail_address_textview);
+        notesEditText = (EditText) view.findViewById(R.id.FragmentReportDetail_notes_edittext);
 
-        final Button deleteButton = (Button) view.findViewById(R.id.FragmentDialogReportDetail_delete_button);
-        final Button updateButton = (Button) view.findViewById(R.id.FragmentDialogReportDetail_update_button);
+        final Button deleteButton = (Button) view.findViewById(R.id.FragmentReportDetail_delete_button);
+        final Button updateButton = (Button) view.findViewById(R.id.FragmentReportDetail_update_button);
 
         idTextView.setText(taskModel.getId());
         tagTextView.setText(taskModel.getTag());
@@ -70,6 +78,14 @@ TimeFragment.Callback{
         timeTextView.setText(taskModel.getTime());
         addressTextView.setText(taskModel.getLocation());
         notesEditText.setText(taskModel.getNotes());
+
+        if(taskModel.getAdditionalFields() != null){
+            CustomViewCreator.createViewForJSONArray(getActivity(),
+                    mParentLayoutForAdditionalFields,
+                    taskModel.getAdditionalFields(),
+                    mParentLayoutForAdditionalFields.getChildCount());
+            mAdditionalFieldsManager.init(taskModel.getAdditionalFields());
+        }
 
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -100,6 +116,7 @@ TimeFragment.Callback{
             @Override
             public void onClick(View v) {
                 taskModel.setNotes(notesEditText.getText().toString());
+                taskModel.setAdditionalFields(mAdditionalFieldsManager.getJSONArrayWithDataForSaveAsString());
                 int id = getActivity()
                         .getContentResolver()
                         .update(DatabaseContract.Tasks.CONTENT_URI,taskModel.getContentValues(),null,null);

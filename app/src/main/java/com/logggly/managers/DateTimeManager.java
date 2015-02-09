@@ -1,7 +1,6 @@
 package com.logggly.managers;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 
 import com.logggly.ui.fragments.DateFragment;
@@ -15,13 +14,17 @@ import java.util.Calendar;
 public class DateTimeManager {
 
     private Calendar mCalendarReference;
-    private FragmentActivity mActivityReference;
-    private Fragment mFragmentReference;
+    private FragmentManager mFragmentManager;
+    private TimeFragment.Callback mTimeFragmentCallback;
+    private DateFragment.Callback mDateFragmentCallback;
 
-    public DateTimeManager(Calendar calendarReference, FragmentActivity activityReference, Fragment fragmentReference) {
+    public DateTimeManager(Calendar calendarReference, FragmentManager fragmentManager,
+                           TimeFragment.Callback timeFragmentCallback,
+                           DateFragment.Callback dateFragmentCallback) {
         mCalendarReference = calendarReference;
-        mActivityReference = activityReference;
-        mFragmentReference = fragmentReference;
+        mFragmentManager = fragmentManager;
+        mTimeFragmentCallback = timeFragmentCallback;
+        mDateFragmentCallback = dateFragmentCallback;
     }
 
     public View.OnClickListener getSetDateButtonOnClickListener() {
@@ -36,8 +39,8 @@ public class DateTimeManager {
         @Override
         public void onClick(View v) {
             DateFragment dateFragment = DateFragment.newInstance(mCalendarReference);
-            dateFragment.setTargetFragment(mFragmentReference,0);
-            dateFragment.show(mActivityReference.getSupportFragmentManager(), null);
+            dateFragment.setCallback(mDateFragmentCallback);
+            dateFragment.show(mFragmentManager, null);
         }
 
     };
@@ -46,8 +49,8 @@ public class DateTimeManager {
         @Override
         public void onClick(View v) {
             TimeFragment timeFragment = TimeFragment.newInstance(mCalendarReference);
-            timeFragment.setTargetFragment(mFragmentReference,0);
-            timeFragment.show(mActivityReference.getSupportFragmentManager(),null);
+            timeFragment.setCallback(mTimeFragmentCallback);
+            timeFragment.show(mFragmentManager,null);
         }
     };
 

@@ -1,6 +1,5 @@
 package com.logggly.ui.fragments;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -32,15 +31,6 @@ public class DateFragment extends DialogFragment implements DatePickerDialog.OnD
     private Calendar mCalendar;
     private Callback mCallback;
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try{
-            mCallback = (Callback) getTargetFragment();
-        }catch (ClassCastException e){
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -57,14 +47,17 @@ public class DateFragment extends DialogFragment implements DatePickerDialog.OnD
         return new DatePickerDialog(getActivity(),this,year,month,day);
     }
 
+    public void setCallback(Callback callback) {
+        mCallback = callback;
+    }
+
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         mCalendar.set(year, monthOfYear, dayOfMonth);
+        if(mCallback == null){
+            throw new RuntimeException("Set DateFragment Callback");
+        }
         mCallback.updateDateInstance(mCalendar);
 
-//        MainDataFragment mainDataFragmentReference = (MainDataFragment) getTargetFragment();
-//        if(mainDataFragmentReference != null){
-//            mainDataFragmentReference.setDateTextView();
-//        }
     }
 }

@@ -6,6 +6,9 @@ import android.database.Cursor;
 import com.logggly.databases.DatabaseContract;
 import com.logggly.utilities.DateTimeFormatter;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,11 +22,13 @@ import java.util.Locale;
  */
 public class TaskModel implements Serializable{
 
+
     public TaskModel(Cursor cursor) throws ParseException {
         mId = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tasks._ID));
         mTag = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tasks.COLUMN_TAG));
         mLocation = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tasks.COLUMN_LOCATION_NAME));
         mNotes = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tasks.COLUMN_NOTES));
+        mAdditionalFields = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tasks.COLUMN_ADDITIONAL_FIELDS));
 //        mLatitude = cursor.getDouble(cursor.getColumnIndex(DatabaseContract.Tasks.COLUMN_LATITUDE));
 //        mLongitude = cursor.getDouble(cursor.getColumnIndex(DatabaseContract.Tasks.COLUMN_LONGITUDE));
         Calendar calendar = new GregorianCalendar();
@@ -41,6 +46,20 @@ public class TaskModel implements Serializable{
     private String mLocation;
     private String mNotes;
     private Calendar mCalendar;
+    private String mAdditionalFields;
+
+    public JSONArray getAdditionalFields() {
+        try {
+            return new JSONArray(mAdditionalFields);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void setAdditionalFields(String additionalFields) {
+        mAdditionalFields = additionalFields;
+    }
 
     public String getId() {
         return mId;
@@ -90,6 +109,7 @@ public class TaskModel implements Serializable{
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date(mCalendar.getTimeInMillis());
         contentValues.put(DatabaseContract.Tasks.COLUMN_DATE_TIME, dateFormat.format(date));
+        contentValues.put(DatabaseContract.Tasks.COLUMN_ADDITIONAL_FIELDS, mAdditionalFields);
         contentValues.put(DatabaseContract.Tasks._ID,mId);
         contentValues.put(DatabaseContract.Tasks.COLUMN_NOTES, mNotes);
         return contentValues;

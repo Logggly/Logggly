@@ -1,6 +1,5 @@
 package com.logggly.ui.fragments;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
@@ -29,18 +28,8 @@ public class TimeFragment extends DialogFragment implements TimePickerDialog.OnT
     }
 
     private Calendar mCalendar;
-
     private Callback mCallback;
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try{
-            mCallback = (Callback) getTargetFragment();
-        }catch (ClassCastException e){
-            throw new RuntimeException("Implement Callback of TimeFragment in Calling fragment.");
-        }
-    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -56,6 +45,9 @@ public class TimeFragment extends DialogFragment implements TimePickerDialog.OnT
         return new TimePickerDialog(getActivity(),this,hours,minutes,false);
     }
 
+    public void setCallback(Callback callback) {
+        mCallback = callback;
+    }
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -63,10 +55,9 @@ public class TimeFragment extends DialogFragment implements TimePickerDialog.OnT
            int month = mCalendar.get(Calendar.MONTH);
         int day = mCalendar.get(Calendar.DAY_OF_MONTH);
         mCalendar.set(year,month,day,hourOfDay,minute);
+        if(mCallback == null){
+            throw new RuntimeException("Set TimeFragment Callback");
+        }
         mCallback.updateTimeInstance(mCalendar);
-//        MainDataFragment mainDataFragmentReference = (MainDataFragment) getTargetFragment();
-//        if(mainDataFragmentReference != null){
-//            mainDataFragmentReference.setTimeTextView();
-//        }
     }
 }

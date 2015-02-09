@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,6 +41,7 @@ import com.google.android.gms.location.LocationServices;
 import com.logggly.R;
 import com.logggly.background.services.FetchAddressIntentService;
 import com.logggly.databases.DatabaseContract;
+import com.logggly.managers.AdditionalFieldsManager;
 import com.logggly.managers.DateTimeManager;
 import com.logggly.managers.TagAdapterManager;
 import com.logggly.ui.customviews.CustomViewCreator;
@@ -50,7 +52,6 @@ import com.logggly.utilities.VoiceUtility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -71,6 +72,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     private LocationRequest mLocationRequest;
     private TextView mVoiceStatusTextView;
     private JSONArray mAdditionalFieldJSONArray;
+    private AdditionalFieldsManager mAdditionalFieldsManager;
 
     public static final MainDataFragment newInstance(){
         MainDataFragment mainDataFragment = new MainDataFragment();
@@ -116,7 +118,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
                 .build();
         mAddressResultReceiver = new AddressResultReceiver(new Handler());
         mCalendar = Calendar.getInstance();
-        mDateTimeManager = new DateTimeManager(mCalendar,getActivity(),this);
+        mDateTimeManager = new DateTimeManager(mCalendar,getActivity().getSupportFragmentManager(),this,this);
         mTagAdapterManager = new TagAdapterManager(getActivity());
 //        mVoiceUtility = VoiceUtility.getInstance(getActivity());
     }
@@ -134,10 +136,12 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mGoogleApiClient.connect();
         View mRootView = inflater.inflate(R.layout.fragment_main_data,container,false);
         mTableLayout = (TableLayout) mRootView.findViewById(R.id.FragmentMainData_table_layout);
         mCompulsoryViewsCount = mTableLayout.getChildCount();
-        mGoogleApiClient.connect();
+        mAdditionalFieldsManager = new AdditionalFieldsManager(getActivity(),mTableLayout,
+                getActivity().getSupportFragmentManager());
 //        mVoiceUtility.setCallback(mVoiceUtilityCallback);
         mVoiceStatusTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_voice_textview);
         mAddressTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_address_textview);
@@ -171,81 +175,72 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         return mRootView;
     }
 
-    private View.OnFocusChangeListener mOnFocusChangeListener = new View.OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View v, boolean hasFocus) {
+//    private View.OnFocusChangeListener mOnFocusChangeListener = new View.OnFocusChangeListener() {
+//        @Override
+//        public void onFocusChange(View v, boolean hasFocus) {
+//
+//            if (hasFocus == false && v.getId() == R.id.FragmentMainData_tag_edittext) {
+//                if (mAdditionalFieldJSONArray != null) {
+//                    Log.d(TAG, "Selected: " + mAdditionalFieldJSONArray.toString());
+//                    CustomViewCreator.createViewForJSONArray(getActivity(),
+//                            mTableLayout,mAdditionalFieldJSONArray,mCompulsoryViewsCount);
+//                    additionalFieldsManager();
+//                } else {
+//                    Log.d(TAG, "Not Selected");
+//                }
+//            }
+//        }
+//    };
 
-            if (hasFocus == false && v.getId() == R.id.FragmentMainData_tag_edittext) {
-                if (mAdditionalFieldJSONArray != null) {
-                    Log.d(TAG, "Selected: " + mAdditionalFieldJSONArray.toString());
-                    CustomViewCreator.createViewForJSONArray(getActivity(),
-                            mTableLayout,mAdditionalFieldJSONArray,mCompulsoryViewsCount);
-                    additionalFieldsManager();
-                } else {
-                    Log.d(TAG, "Not Selected");
-                }
-            }
-        }
-    };
 
-    private void additionalFieldsManager() {
-        for (int i = 0 ; i < mAdditionalFieldJSONArray.length();i++){
-            JSONObject jsonObject = mAdditionalFieldJSONArray.optJSONObject(i);
-            String field = jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_TYPE);
-            if(field.equals(getString(R.string.alphanumeric))){
-
-            }
-            else if(field.equals(getString(R.string.url))){
-
-            }
-            else if(field.equals(getString(R.string.duration))){
-                TextView textView = (TextView) mTableLayout.findViewWithTag(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME));
-                textView.setOnClickListener(mDateTimeManager.getSetTimeButtonOnClickListener());
-            }
-
-        }
-    }
 
 
     private void autoCompleteTagInit() {
-        mTagEditText.setOnFocusChangeListener(mOnFocusChangeListener);
+//        mTagEditText.setOnFocusChangeListener(mOnFocusChangeListener);
         mTagEditText.setAdapter(mTagAdapterManager.getAdapter());
         mTagAdapterManager.initLoader();
         mTagAdapterManager.getAdapter().setCursorToStringConverter(new SimpleCursorAdapter.CursorToStringConverter() {
             @Override
             public CharSequence convertToString(Cursor cursor) {
                 String tagName = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tags.COLUMN_NAME));
-
-                String additionalFields = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tags.COLUMN_ADDITIONAL_FIELDS));
-                if(additionalFields!=null && !additionalFields.isEmpty()) {
-                    try {
-                        mAdditionalFieldJSONArray = new JSONArray(additionalFields);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }else{
-                    mAdditionalFieldJSONArray = null;
-                }
-
-            return tagName;
+                return tagName;
             }
         });
+
         mTagEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                mAdditionalFieldJSONArray = null;
+                CustomViewCreator.removeAdditionalViews(mTableLayout,mCompulsoryViewsCount);
+                mAdditionalFieldsManager.clear();
                 mTagAdapterManager.restartLoaderWithFilter(s.toString());
             }
         });
+
+        mTagEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
+                String additionalFields = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tags.COLUMN_ADDITIONAL_FIELDS));
+                try {
+                    mAdditionalFieldJSONArray = new JSONArray(additionalFields);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                CustomViewCreator.createViewForJSONArray(getActivity(),
+                        mTableLayout, mAdditionalFieldJSONArray, mCompulsoryViewsCount);
+                mAdditionalFieldsManager.init(mAdditionalFieldJSONArray);
+            }
+        });
+
     }
 
     public void setDateTextView() {
@@ -315,6 +310,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
                             , NewFieldMakerFragment.newInstance(getTagText()))
                             .addToBackStack(null)
                             .commit();
+                    mTagEditText.setText("");
 
                 }else {
                     ContentValues contentValues = new ContentValues();
@@ -346,7 +342,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date(mCalendar.getTimeInMillis());
         contentValues.put(DatabaseContract.Tasks.COLUMN_DATE_TIME, dateFormat.format(date));
-
+        contentValues.put(DatabaseContract.Tasks.COLUMN_ADDITIONAL_FIELDS, mAdditionalFieldsManager.getJSONArrayWithDataForSaveAsString());
         Uri newUri = getActivity().getContentResolver().insert(DatabaseContract.Tasks.CONTENT_URI, contentValues);
         long rowId = ContentUris.parseId(newUri);
         if( rowId > 0 ){
@@ -356,6 +352,12 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
             mNotesEditText.setText("");
             mIdTextView.setText((rowId+1)+"");
             PrefrenceUtility.setTaskCurrentId(rowId);
+
+            Cursor cursor = getActivity().getContentResolver().query(DatabaseContract.Tasks.buildUriAgainstTagName(tagText),null,null,null,null);
+            while (cursor.moveToNext()){
+                Log.d(TAG, cursor.getString(cursor.getColumnIndex(DatabaseContract.Tasks.COLUMN_ADDITIONAL_FIELDS)));
+            }
+
         }else{
             Toast.makeText(getActivity(),"Task not saved",Toast.LENGTH_SHORT).show();
         }
