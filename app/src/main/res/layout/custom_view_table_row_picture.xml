@@ -11,10 +11,12 @@ style="@style/MainDataFragmentTableRow"
         android:text="a"
         />
 
-    <EditText
+    <ImageView
         android:id="@+id/CustomView_field"
         style="@style/MainDataFragmentSecondColumn"
-        android:singleLine="true"
+        android:src="@drawable/ic_launcher"
+        android:layout_width="@dimen/dp48"
+        android:layout_height="@dimen/dp48"
         />
 </TableRow>
 </merge>

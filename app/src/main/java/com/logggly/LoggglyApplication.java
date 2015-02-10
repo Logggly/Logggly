@@ -7,9 +7,6 @@ import android.database.Cursor;
 
 import com.logggly.databases.DatabaseContract;
 
-import java.util.Calendar;
-import java.util.Locale;
-
 /**
  * Created by Hafiz Waleed Hussain on 1/28/2015.
  */
@@ -28,8 +25,8 @@ public class LoggglyApplication extends Application {
             contentValues.put(DatabaseContract.Tags.COLUMN_NAME, "All");
             getContentResolver().insert(DatabaseContract.Tags.CONTENT_URI, contentValues);
 
-            contentValues.put(DatabaseContract.Tags.COLUMN_NAME, "Null");
-            getContentResolver().insert(DatabaseContract.Tags.CONTENT_URI, contentValues);
+//            contentValues.put(DatabaseContract.Tags.COLUMN_NAME, "Null");
+//            getContentResolver().insert(DatabaseContract.Tags.CONTENT_URI, contentValues);
 
         }
     }

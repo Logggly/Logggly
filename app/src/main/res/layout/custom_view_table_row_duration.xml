@@ -11,12 +11,32 @@ style="@style/MainDataFragmentTableRow"
         android:text="a"
         />
 
-    <TextView
-        android:id="@+id/CustomView_field"
+    <LinearLayout
         style="@style/MainDataFragmentSecondColumn"
         android:gravity="center"
-
-
+        android:orientation="vertical"
+        >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:id="@+id/CustomViewDuration_start_time"
+        android:visibility="gone"
         />
+    <TextView
+        android:id="@+id/CustomViewDuration_chronometer_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        />
+    <TextView
+        android:id="@+id/CustomViewDuration_end_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
 </TableRow>
 </merge>

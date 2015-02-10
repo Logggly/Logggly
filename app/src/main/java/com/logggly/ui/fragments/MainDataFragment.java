@@ -38,6 +38,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.logggly.BuildConfig;
 import com.logggly.R;
 import com.logggly.background.services.FetchAddressIntentService;
 import com.logggly.databases.DatabaseContract;
@@ -136,6 +137,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setRetainInstance(true);
         mGoogleApiClient.connect();
         View mRootView = inflater.inflate(R.layout.fragment_main_data,container,false);
         mTableLayout = (TableLayout) mRootView.findViewById(R.id.FragmentMainData_table_layout);
@@ -151,7 +153,6 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         mIdTextView.setText((PrefrenceUtility.getTaskCurrentId() + 1) + "");
         mTagEditText = (AutoCompleteTextView) mRootView.findViewById(R.id.FragmentMainData_tag_edittext);
         autoCompleteTagInit();
-//        mTagEditText.setOnFocusChangeListener(mOnFocusChangeListener);
         mNotesEditText = (EditText) mRootView.findViewById(R.id.FragmentMainData_notes_edittext);
         mSaveButton = (Button) mRootView.findViewById(R.id.FragmentMainData_save_button);
         mSaveButton.setOnClickListener(mSaveButtonClickListener);
@@ -175,28 +176,45 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         return mRootView;
     }
 
-//    private View.OnFocusChangeListener mOnFocusChangeListener = new View.OnFocusChangeListener() {
-//        @Override
-//        public void onFocusChange(View v, boolean hasFocus) {
-//
-//            if (hasFocus == false && v.getId() == R.id.FragmentMainData_tag_edittext) {
-//                if (mAdditionalFieldJSONArray != null) {
-//                    Log.d(TAG, "Selected: " + mAdditionalFieldJSONArray.toString());
-//                    CustomViewCreator.createViewForJSONArray(getActivity(),
-//                            mTableLayout,mAdditionalFieldJSONArray,mCompulsoryViewsCount);
-//                    additionalFieldsManager();
-//                } else {
-//                    Log.d(TAG, "Not Selected");
-//                }
-//            }
-//        }
-//    };
+    private View.OnFocusChangeListener mOnFocusChangeListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
 
+            if (hasFocus == false && v.getId() == R.id.FragmentMainData_tag_edittext) {
+                if (isTagEmpty()) return;
 
+                Cursor cursor = getActivity().getContentResolver().query(DatabaseContract.Tags.buildUriForSearchTag(getTagText()), null, null, null, null);
+                if (cursor.getCount() == 0) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle(getString(R.string.new_tag));
+//                    builder.setMessage(getString(R.string.new_tag));
+                    builder.setMultiChoiceItems(R.array.additional_fields, new boolean[]{newFieldsIsChecked}, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                            newFieldsIsChecked = isChecked;
+                        }
+                    });
+                    builder.setPositiveButton(getString(R.string.yes), newTagCreatorDialogYesClickListener);
+                    builder.setNegativeButton(getString(R.string.no), newTagCreatorDialogNoClickListener);
+                    mNewTagCreatorAlertDialog = builder.create();
+                    mNewTagCreatorAlertDialog.show();
+
+                }
+            }
+        }
+    };
+
+    private boolean isTagEmpty() {
+        if (getTagText().isEmpty()) {
+            Toast.makeText(getActivity(), R.string.please_enter_tag, Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
+    }
 
 
     private void autoCompleteTagInit() {
-//        mTagEditText.setOnFocusChangeListener(mOnFocusChangeListener);
+        mTagEditText.setOnFocusChangeListener(mOnFocusChangeListener);
         mTagEditText.setAdapter(mTagAdapterManager.getAdapter());
         mTagAdapterManager.initLoader();
         mTagAdapterManager.getAdapter().setCursorToStringConverter(new SimpleCursorAdapter.CursorToStringConverter() {
@@ -230,14 +248,16 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
                 String additionalFields = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tags.COLUMN_ADDITIONAL_FIELDS));
-                try {
-                    mAdditionalFieldJSONArray = new JSONArray(additionalFields);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if(additionalFields!=null && !additionalFields.isEmpty()) {
+                    try {
+                        mAdditionalFieldJSONArray = new JSONArray(additionalFields);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    CustomViewCreator.createViewForJSONArray(getActivity(),
+                            mTableLayout, mAdditionalFieldJSONArray, mCompulsoryViewsCount);
+                    mAdditionalFieldsManager.init(mAdditionalFieldJSONArray);
                 }
-                CustomViewCreator.createViewForJSONArray(getActivity(),
-                        mTableLayout, mAdditionalFieldJSONArray, mCompulsoryViewsCount);
-                mAdditionalFieldsManager.init(mAdditionalFieldJSONArray);
             }
         });
 
@@ -260,10 +280,8 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     private View.OnClickListener mSaveButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (isTagEmpty()) return;
             String tagText = mTagEditText.getText().toString().trim();
-            if(tagText.isEmpty()){
-                tagText = getString(R.string.Null);
-            }
 
                 Cursor cursor = getActivity().getContentResolver().query(DatabaseContract.Tags.buildUriForSearchTag(tagText), null, null, null, null);
                 if (cursor.getCount() == 0) {
@@ -304,20 +322,24 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(newFieldsIsChecked){
+                    String tagText = getTagText();
+                    mTagEditText.setText("");
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.MainActivity_container_framelayout
-                            , NewFieldMakerFragment.newInstance(getTagText()))
+                            , NewFieldMakerFragment.newInstance(tagText))
                             .addToBackStack(null)
                             .commit();
-                    mTagEditText.setText("");
 
                 }else {
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(DatabaseContract.Tags.COLUMN_NAME, getTagText());
                     Uri newUri = getActivity().getContentResolver().insert(DatabaseContract.Tags.CONTENT_URI, contentValues);
                     if (ContentUris.parseId(newUri) > 0) {
-                        saveTask(getTagText());
+//                        saveTask(getTagText());
+                        Toast.makeText(getActivity(), R.string.new_tag_created_successfully,
+                                Toast.LENGTH_SHORT)
+                                .show();
                     }
                 }
                 dialog.dismiss();
@@ -446,6 +468,16 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if( mLastLocation == null){
             setAddressTextView(getString(R.string.location_not_available));
+            mAddressProgressBar.setVisibility(View.GONE);
+            if(BuildConfig.DEBUG) {
+                Location location = new Location(Context.LOCATION_SERVICE);
+                Double lat = Double.valueOf(0.0);
+                location.setLatitude(lat);
+                Double longi = Double.valueOf(0.0);
+                location.setLongitude(longi);
+                mLastLocation = location;
+                startFetchAddressService();
+            }
         }else{
             startFetchAddressService();
         }
@@ -478,6 +510,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         mLastLocation = location;
         if( mLastLocation == null){
             setAddressTextView(getString(R.string.location_not_available));
+            mAddressProgressBar.setVisibility(View.GONE);
         }else{
             startFetchAddressService();
         }

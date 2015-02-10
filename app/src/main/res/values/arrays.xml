@@ -2,12 +2,14 @@
 <resources>
 
     <string-array name="field_types">
-        <item>Alphanumeric</item>
-        <item>Duration</item>
+        <item>@string/alphanumeric</item>
+        <item>@string/numeric</item>
+        <item>@string/duration</item>
+        <item>@string/picture</item>
         <!--<item>Picture</item>-->
         <!--<item>Video</item>-->
         <!--<item>Audio</item>-->
-        <item>URL</item>
+        <item>@string/url</item>
         <!--<item>Documents</item>-->
     </string-array>
 

@@ -34,11 +34,13 @@
 
     <!-- -->
     <string name="alphanumeric">Alphanumeric</string>
+    <string name="numeric">Numeric</string>
     <string name="duration">Duration</string>
-    <!--<item>Picture</item>-->
+    <string name="picture">Picture</string>
     <!--<item>Video</item>-->
-    <!--<item>Audio</item>-->
+    <!--&lt;!&ndash;<item>Audio</item>&ndash;&gt;-->
     <string name="url">URL</string>
+    <string name="enter_numeric_value">Enter numeric value</string>
     <!--<item>Documents</item>-->
 
 </resources>
