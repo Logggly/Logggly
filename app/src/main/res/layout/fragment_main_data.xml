@@ -62,6 +62,7 @@
                 <TextView
                     style="@style/MainDataFragmentFirstColumnHeadings"
                     android:text="@string/tag_"
+                    android:id="@+id/FragmentMainData_tag_textview"
                     />
 
                 <AutoCompleteTextView

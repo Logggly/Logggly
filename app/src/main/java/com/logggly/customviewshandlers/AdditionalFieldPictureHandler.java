@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.logggly.R;
 import com.logggly.managers.PictureManager;
@@ -15,13 +16,16 @@ import java.io.IOException;
 /**
  * Created by Hafiz Waleed Hussain on 2/9/2015.
  */
-public class AdditionalFieldPictureHandler {
+public class AdditionalFieldPictureHandler extends AbstractAdditionalField{
     private ImageView mImageView;
     private PictureManager mPictureManager;
     private String mPath ;
 
-    public AdditionalFieldPictureHandler(FragmentManager fragmentManager, ImageView imageView,
+    public AdditionalFieldPictureHandler(FragmentManager fragmentManager,
+                                         TextView headerTextView,
+                                         ImageView imageView,
                                          String path) {
+        super(fragmentManager, headerTextView);
         mImageView = imageView;
         mPath = path;
         mPictureManager = new PictureManager(fragmentManager,mCallback);

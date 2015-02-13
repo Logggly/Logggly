@@ -49,20 +49,25 @@ public class AdditionalFieldsManager {
             JSONObject jsonObject = additionalFieldJSONArray.optJSONObject(i);
             String field = jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_TYPE);
             String fieldName = jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME);
+            TextView headerTextView = (TextView) mParentLayout.findViewWithTag(fieldName+":");
 
             if(field.equals(mContext.getString(R.string.alphanumeric))){
                 EditText editText = (EditText) mParentLayout.findViewWithTag(fieldName);
                 String text = jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_DATA);
                 editText.setText(text);
                 mAdditionalFieldAlphaNumericModelHashMap.put(fieldName,
-                        new AdditionalFieldAlphaNumericHandler(mFragmentManager,editText));
+                        new AdditionalFieldAlphaNumericHandler(mFragmentManager,
+                                headerTextView,
+                                editText));
             }
             else if(field.equals(mContext.getString(R.string.numeric))){
                 EditText editText = (EditText) mParentLayout.findViewWithTag(fieldName);
                 String text = jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_DATA);
                 editText.setText(text);
                 mAdditionalFieldAlphaNumericModelHashMap.put(fieldName,
-                        new AdditionalFieldAlphaNumericHandler(mFragmentManager,editText));
+                        new AdditionalFieldAlphaNumericHandler(mFragmentManager,
+                                headerTextView,
+                                editText));
             }
 
             else if(field.equals(mContext.getString(R.string.url))){
@@ -84,14 +89,20 @@ public class AdditionalFieldsManager {
                 }
                 mAdditionalFieldDurationModelHashMap.put(fieldName,
                         new AdditionalFieldDurationHandler(mFragmentManager,
-                                textView, startDate,endDate));
+                                headerTextView,
+                                textView,
+                                startDate,
+                                endDate));
 
             }
             else if(field.equals(mContext.getString(R.string.picture))){
                 ImageView imageView = (ImageView) mParentLayout.findViewWithTag(fieldName);
                 String text = jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_DATA);
                 mAdditionalFieldPictureModelHashMap.put(fieldName,
-                        new AdditionalFieldPictureHandler(mFragmentManager,imageView,text));
+                        new AdditionalFieldPictureHandler(mFragmentManager,
+                                headerTextView,
+                                imageView,
+                                text));
 
             }
 

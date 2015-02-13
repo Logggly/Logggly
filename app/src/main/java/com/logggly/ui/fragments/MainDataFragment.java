@@ -38,7 +38,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.logggly.BuildConfig;
 import com.logggly.R;
 import com.logggly.background.services.FetchAddressIntentService;
 import com.logggly.databases.DatabaseContract;
@@ -86,6 +85,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     private EditText mNotesEditText;
     private Button mSaveButton;
     private Button mReportButton;
+    private TextView mTagHeaderTextView;
     private TextView mSetDateTextView;
     private TextView mSetTimeTextView;
     private TextView mIdTextView;
@@ -146,6 +146,9 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
                 getActivity().getSupportFragmentManager());
 //        mVoiceUtility.setCallback(mVoiceUtilityCallback);
         mVoiceStatusTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_voice_textview);
+        mTagHeaderTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_tag_textview);
+        mTagHeaderTextView.setOnClickListener(mTagHeaderOnClickListener);
+
         mAddressTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_address_textview);
         mAddressProgressBar = (ProgressBar) mRootView.findViewById(R.id.FragmentMainData_address_progress_bar);
      
@@ -204,6 +207,29 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         }
     };
 
+    private View.OnClickListener mTagHeaderOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            TagsListDialogFragment tagsListDialogFragment = TagsListDialogFragment.newInstance();
+            tagsListDialogFragment.setCallback(new TagsListDialogFragment.Callback() {
+                @Override
+                public void selectedTagName(String name) {
+                    Cursor cursor = getActivity().
+                            getContentResolver().
+                            query(DatabaseContract.Tags.buildUriForSearchTag(name),
+                                    null,null,null,null);
+                    if(cursor.getCount() > 0){
+                        mTagEditText.setText(name);
+                        mTagEditText.dismissDropDown();
+                        tagSelectionHandler(cursor);
+                    }
+                }
+            });
+
+            tagsListDialogFragment.show(getActivity().getSupportFragmentManager(),null);
+        }
+    };
+
     private boolean isTagEmpty() {
         if (getTagText().isEmpty()) {
             Toast.makeText(getActivity(), R.string.please_enter_tag, Toast.LENGTH_SHORT).show();
@@ -247,25 +273,30 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
-                String additionalFields = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tags.COLUMN_ADDITIONAL_FIELDS));
-                if(additionalFields!=null && !additionalFields.isEmpty()) {
-                    try {
-                        mAdditionalFieldJSONArray = new JSONArray(additionalFields);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    CustomViewCreator.createViewForJSONArray(getActivity(),
-                            mTableLayout, mAdditionalFieldJSONArray, mCompulsoryViewsCount);
-                    mAdditionalFieldsManager.init(mAdditionalFieldJSONArray);
-                }
+                tagSelectionHandler(cursor);
+                mTagAdapterManager.getAdapter().changeCursor(null);
             }
         });
 
     }
 
+    private void tagSelectionHandler(Cursor cursor) {
+        String additionalFields = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tags.COLUMN_ADDITIONAL_FIELDS));
+        if(additionalFields!=null && !additionalFields.isEmpty()) {
+            try {
+                mAdditionalFieldJSONArray = new JSONArray(additionalFields);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            CustomViewCreator.createViewForJSONArray(getActivity(),
+                    mTableLayout, mAdditionalFieldJSONArray, mCompulsoryViewsCount);
+            mAdditionalFieldsManager.init(mAdditionalFieldJSONArray);
+        }
+    }
+
     public void setDateTextView() {
         mSetDateTextView.setText(DateTimeFormatter.dateFormatter(mCalendar));
-        mMetaDateTextView.setText("Week Of Month"+ mCalendar.get(Calendar.WEEK_OF_MONTH));
+        mMetaDateTextView.setText("Week Of Month "+ mCalendar.get(Calendar.WEEK_OF_MONTH));
     }
 
     public void setTimeTextView() {
@@ -469,15 +500,15 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         if( mLastLocation == null){
             setAddressTextView(getString(R.string.location_not_available));
             mAddressProgressBar.setVisibility(View.GONE);
-            if(BuildConfig.DEBUG) {
-                Location location = new Location(Context.LOCATION_SERVICE);
-                Double lat = Double.valueOf(0.0);
-                location.setLatitude(lat);
-                Double longi = Double.valueOf(0.0);
-                location.setLongitude(longi);
-                mLastLocation = location;
-                startFetchAddressService();
-            }
+//            if(BuildConfig.DEBUG) {
+//                Location location = new Location(Context.LOCATION_SERVICE);
+//                Double lat = Double.valueOf(0.0);
+//                location.setLatitude(lat);
+//                Double longi = Double.valueOf(0.0);
+//                location.setLongitude(longi);
+//                mLastLocation = location;
+//                startFetchAddressService();
+//            }
         }else{
             startFetchAddressService();
         }

@@ -2,16 +2,21 @@ package com.logggly.customviewshandlers;
 
 import android.support.v4.app.FragmentManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.logggly.R;
 
 /**
  * Created by Hafiz Waleed Hussain on 2/9/2015.
  */
-public class AdditionalFieldNumericHandler {
+public class AdditionalFieldNumericHandler extends AbstractAdditionalField{
+
     private EditText mEditText;
 
-    public AdditionalFieldNumericHandler(FragmentManager fragmentManager, EditText editText) {
+    public AdditionalFieldNumericHandler(FragmentManager fragmentManager,
+                                         TextView headerTextView,
+                                         EditText editText) {
+        super(fragmentManager, headerTextView);
         mEditText = editText;
     }
 

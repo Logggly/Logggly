@@ -43,12 +43,9 @@ public class CustomViewFactory {
     }
 
     private static void createDurationView(JSONObject jsonObject, TableLayout parent) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        ViewGroup viewGroup = (ViewGroup) layoutInflater.inflate(R.layout.custom_view_table_row_duration,parent,true);
-
-        TextView textView = (TextView) viewGroup.findViewById(R.id.CustomView_heading_textview);
-        textView.setId(0);
-        textView.setText(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME) + ":");
+        ViewGroup viewGroup = getViewGroupWithInitialization(jsonObject,
+                R.layout.custom_view_table_row_duration,
+                parent);
 
         TextView startDateTextView = (TextView) viewGroup.findViewById(R.id.CustomViewDuration_start_time);
         TextView endDateTextView = (TextView) viewGroup.findViewById(R.id.CustomViewDuration_end_time);
@@ -56,68 +53,82 @@ public class CustomViewFactory {
         TextView editText = (TextView) viewGroup.findViewById(R.id.CustomViewDuration_chronometer_textview);
 //        editText.setText(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_TYPE));
         editText.setId(0);
-        editText.setTag(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME));
+        editText.setTag(getFieldName(jsonObject));
 
     }
 
-    private static void createAlphanumericView(JSONObject jsonObject, TableLayout parent) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        ViewGroup viewGroup = (ViewGroup) layoutInflater.inflate(R.layout.custom_view_table_row_alphanumeric,parent,true);
 
-        TextView textView = (TextView) viewGroup.findViewById(R.id.CustomView_heading_textview);
-        textView.setId(0);
-        textView.setText(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME) + ":");
+    private static void createAlphanumericView(JSONObject jsonObject, TableLayout parent) {
+        ViewGroup viewGroup = getViewGroupWithInitialization(jsonObject,
+                R.layout.custom_view_table_row_alphanumeric,
+                parent);
 
         EditText editText = (EditText) viewGroup.findViewById(R.id.CustomView_field);
 //        editText.setText(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_TYPE));
         editText.setId(0);
-        editText.setTag(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME));
+        editText.setTag(getFieldName(jsonObject));
     }
 
-    private static void createNumericView(JSONObject jsonObject, TableLayout parent) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        ViewGroup viewGroup = (ViewGroup) layoutInflater.inflate(R.layout.custom_view_table_row_alphanumeric,parent,true);
 
-        TextView textView = (TextView) viewGroup.findViewById(R.id.CustomView_heading_textview);
-        textView.setId(0);
-        textView.setText(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME) + ":");
+    private static void createNumericView(JSONObject jsonObject, TableLayout parent) {
+        ViewGroup viewGroup = getViewGroupWithInitialization(jsonObject,
+                R.layout.custom_view_table_row_alphanumeric,
+                parent);
 
         EditText editText = (EditText) viewGroup.findViewById(R.id.CustomView_field);
         editText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
         editText.setKeyListener(DigitsKeyListener.getInstance("0123456789.,"));
 //        editText.setText(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_TYPE));
         editText.setId(0);
-        editText.setTag(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME));
+        editText.setTag(getFieldName(jsonObject));
     }
 
-    private static void createUrlView(JSONObject jsonObject, TableLayout parent) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        ViewGroup viewGroup = (ViewGroup) layoutInflater.inflate(R.layout.custom_view_table_row_url,parent,true);
 
-        TextView textView = (TextView) viewGroup.findViewById(R.id.CustomView_heading_textview);
-        textView.setId(0);
-        textView.setText(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME) + ":");
+    private static void createUrlView(JSONObject jsonObject, TableLayout parent) {
+        ViewGroup viewGroup = getViewGroupWithInitialization(jsonObject,
+                R.layout.custom_view_table_row_url,
+                parent);
 
         EditText editText = (EditText) viewGroup.findViewById(R.id.CustomView_field);
 //        editText.setText(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_TYPE));
         editText.setId(0);
-        editText.setTag(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME));
+        editText.setTag(getFieldName(jsonObject));
 
     }
 
     private static void createPictureView(JSONObject jsonObject, TableLayout parent) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        ViewGroup viewGroup = (ViewGroup) layoutInflater.inflate(R.layout.custom_view_table_row_picture,parent,true);
-
-        TextView textView = (TextView) viewGroup.findViewById(R.id.CustomView_heading_textview);
-        textView.setId(0);
-        textView.setText(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME) + ":");
+        ViewGroup viewGroup = getViewGroupWithInitialization(jsonObject,
+                R.layout.custom_view_table_row_picture,
+                parent);
 
         ImageView editText = (ImageView) viewGroup.findViewById(R.id.CustomView_field);
 //        editText.setText(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_TYPE));
         editText.setId(0);
-        editText.setTag(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME));
+        editText.setTag(getFieldName(jsonObject));
 
     }
 
+
+    // Helper methods
+
+    private static ViewGroup getViewGroupWithInitialization(JSONObject jsonObject,int layoutId, TableLayout parent) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        ViewGroup viewGroup = (ViewGroup) layoutInflater.inflate(layoutId,parent,true);
+
+        String fieldName = getFieldName(jsonObject);
+        setHeadingTextView(viewGroup, fieldName);
+        return viewGroup;
+    }
+
+    private static void setHeadingTextView(ViewGroup viewGroup, String fieldName) {
+        String headingText = fieldName+":";
+        TextView textView = (TextView) viewGroup.findViewById(R.id.CustomView_heading_textview);
+        textView.setId(0);
+        textView.setText(headingText);
+        textView.setTag(headingText);
+    }
+
+    private static String getFieldName(JSONObject jsonObject) {
+        return jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME);
+    }
 }

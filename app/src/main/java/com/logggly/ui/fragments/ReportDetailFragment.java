@@ -123,6 +123,7 @@ TimeFragment.Callback{
 
                 if( id == 1){
                     Toast.makeText(getActivity(),"Event updated successfully",Toast.LENGTH_SHORT).show();
+                    getActivity().onBackPressed();
                 }
             }
         });

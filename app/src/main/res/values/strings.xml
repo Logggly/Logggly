@@ -36,7 +36,7 @@
     <string name="alphanumeric">Alphanumeric</string>
     <string name="numeric">Numeric</string>
     <string name="duration">Duration</string>
-    <string name="picture">Picture</string>
+    <string name="picture">Snapshot</string>
     <!--<item>Video</item>-->
     <!--&lt;!&ndash;<item>Audio</item>&ndash;&gt;-->
     <string name="url">URL</string>

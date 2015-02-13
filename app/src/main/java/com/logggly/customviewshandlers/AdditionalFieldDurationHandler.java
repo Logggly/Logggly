@@ -13,15 +13,20 @@ import java.util.concurrent.TimeUnit;
 /**
 * Created by Hafiz Waleed Hussain on 2/9/2015.
 */
-public class AdditionalFieldDurationHandler {
+public class AdditionalFieldDurationHandler extends AbstractAdditionalField{
+
     private DurationManager mDurationManager;
     private TextView mTextView;
     private Calendar mStartDate;
     private Calendar mEndDate;
 
 
-    public AdditionalFieldDurationHandler(FragmentManager fragmentManager, TextView textView,
-                                          Calendar startDate, Calendar endDate) {
+    public AdditionalFieldDurationHandler(FragmentManager fragmentManager,
+                                          TextView headerTextView,
+                                          TextView textView,
+                                          Calendar startDate,
+                                          Calendar endDate) {
+        super(fragmentManager, headerTextView);
         mTextView = textView;
         mStartDate = startDate;
         mEndDate = endDate;
