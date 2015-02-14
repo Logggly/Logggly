@@ -2,6 +2,7 @@ package com.logggly.ui.fragments;
 
 
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -19,13 +20,15 @@ public class PagerReportDetailFragment extends AbstractLoggglyFragment implement
         LoaderCallbacks<Cursor>{
 
     private int mPosition;
+    private String mTagName = "All";
     private ViewPager mViewPager;
     private ReportDetailPagerAdapter mReportDetailPagerAdapter;
 
-    public static PagerReportDetailFragment newInstance(int position) {
+    public static PagerReportDetailFragment newInstance(int position, String tagName) {
         PagerReportDetailFragment fragment = new PagerReportDetailFragment();
         Bundle bundle = new Bundle();
         bundle.putInt("position", position);
+        bundle.putString("tag",tagName);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -39,6 +42,7 @@ public class PagerReportDetailFragment extends AbstractLoggglyFragment implement
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mPosition = getArguments().getInt("position",1);
+            mTagName = getArguments().getString("tag");
         }
         getLoaderManager().initLoader(1,null,this);
     }
@@ -54,11 +58,13 @@ public class PagerReportDetailFragment extends AbstractLoggglyFragment implement
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Uri uri = mTagName.equalsIgnoreCase("All") ? DatabaseContract.Tasks.CONTENT_URI:
+                DatabaseContract.Tasks.buildUriAgainstTagName(mTagName);
+
         return new CursorLoader(getActivity(),
-                DatabaseContract.Tasks.CONTENT_URI,
+                uri,
                 null, null, null,
                 DatabaseContract.Tasks.COLUMN_TAG+","+DatabaseContract.Tasks.COLUMN_DATE_TIME + " ASC");
-
     }
 
     @Override

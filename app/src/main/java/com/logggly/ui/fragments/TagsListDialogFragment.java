@@ -42,7 +42,7 @@ public class TagsListDialogFragment extends DialogFragment{
                         null,
                         null,
                         null,
-                        null);
+                        DatabaseContract.Tags.COLUMN_NAME+" ASC");
 
         builder.setTitle(R.string.tag);
         builder.setSingleChoiceItems(cursor,-1, DatabaseContract.Tags.COLUMN_NAME,new DialogInterface.OnClickListener() {

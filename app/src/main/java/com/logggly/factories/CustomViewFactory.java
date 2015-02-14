@@ -77,7 +77,7 @@ public class CustomViewFactory {
 
         EditText editText = (EditText) viewGroup.findViewById(R.id.CustomView_field);
         editText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        editText.setKeyListener(DigitsKeyListener.getInstance("0123456789.,"));
+        editText.setKeyListener(DigitsKeyListener.getInstance("0123456789.,-"));
 //        editText.setText(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_TYPE));
         editText.setId(0);
         editText.setTag(getFieldName(jsonObject));

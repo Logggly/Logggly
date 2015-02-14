@@ -47,12 +47,6 @@ public class ReportFragment extends AbstractLoggglyFragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mTasksAdapter = new TasksAdapter(getActivity(),null);
-        mTagAdapterManager = new TagAdapterManager(getActivity());
-//        mTagsAdapter = new SimpleCursorAdapter(getActivity(),
-//                android.R.layout.simple_spinner_item,
-//                null,
-//                new String[]{DatabaseContract.Tags.COLUMN_NAME},
-//                new int[]{android.R.id.text1});
 
     }
 
@@ -68,6 +62,7 @@ public class ReportFragment extends AbstractLoggglyFragment implements
         mTasksListView.setOnItemClickListener(mOnItemClickListener);
         mDeleteAllWithSelectedTagButton = (Button) view.findViewById(R.id.FragmentReport_delete_all_button);
         mDeleteAllWithSelectedTagButton.setOnClickListener(mDeleteAllWithTagOnClickListener);
+        mTagAdapterManager = new TagAdapterManager(getActivity());
         mTagAdapterManager.initLoader();
         getLoaderManager().initLoader(TASK_LOADER,null,this);
         return view;
@@ -151,7 +146,7 @@ public class ReportFragment extends AbstractLoggglyFragment implements
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.MainActivity_container_framelayout
                     , PagerReportDetailFragment.
-                    newInstance(position))
+                    newInstance(position,mTagName))
                     .addToBackStack(null)
                     .commit();
 

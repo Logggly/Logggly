@@ -178,15 +178,26 @@
                     style="@style/MainDataFragmentFirstColumnHeadings"
                     android:text="Notes"/>
 
-                <EditText
-                    android:id="@+id/FragmentMainData_notes_edittext"
+                <LinearLayout
                     style="@style/MainDataFragmentSecondColumn"
-                    android:gravity="left|top"
-                    android:hint="@string/enter_notes"
-                    android:lines="5"
-                    android:maxLines="5"
+                    >
+                    <Button
+                        android:layout_width="@dimen/dp36"
+                        android:layout_height="@dimen/dp36"
+                        android:background="@android:drawable/ic_btn_speak_now"
+                        android:id="@+id/FragmentMainData_notes_mic_button"
+                        />
+                    <EditText
+                        style="@style/MainDataFragmentSecondColumn"
+                        android:id="@+id/FragmentMainData_notes_edittext"
+                        android:gravity="left|top"
+                        android:hint="@string/enter_notes"
+                        android:lines="5"
+                        android:maxLines="5"
+                        />
 
-                    />
+                </LinearLayout
+                    >
 
             </TableRow>
         </TableLayout>

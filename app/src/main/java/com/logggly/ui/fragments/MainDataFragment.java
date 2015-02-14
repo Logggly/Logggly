@@ -1,6 +1,8 @@
 package com.logggly.ui.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.speech.RecognizerIntent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -69,6 +72,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         TimeFragment.Callback{
 
     public static final String TAG = MainDataFragment.class.getSimpleName();
+    private static final int REQ_CODE_SPEECH_INPUT = 10;
     private LocationRequest mLocationRequest;
     private TextView mVoiceStatusTextView;
     private JSONArray mAdditionalFieldJSONArray;
@@ -95,6 +99,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     private TextView mMetaTimeTextView;
     private Button mExpandButton;
     private TableLayout mTableLayout;
+    private Button mNotesMicButton;
 
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
@@ -157,6 +162,8 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         mTagEditText = (AutoCompleteTextView) mRootView.findViewById(R.id.FragmentMainData_tag_edittext);
         autoCompleteTagInit();
         mNotesEditText = (EditText) mRootView.findViewById(R.id.FragmentMainData_notes_edittext);
+        mNotesMicButton = (Button) mRootView.findViewById(R.id.FragmentMainData_notes_mic_button);
+        mNotesMicButton.setOnClickListener(mNotesMicButtonOnClickListener);
         mSaveButton = (Button) mRootView.findViewById(R.id.FragmentMainData_save_button);
         mSaveButton.setOnClickListener(mSaveButtonClickListener);
         mReportButton = (Button) mRootView.findViewById(R.id.FragmentMainData_report_button);
@@ -494,6 +501,54 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         }
     };
 
+
+    private View.OnClickListener mNotesMicButtonOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            promptSpeechInput();
+        }
+    };
+
+    private void promptSpeechInput() {
+
+        //start the speech recognition intent passing required data
+        Intent listenIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        //indicate package
+        listenIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());
+        //message to display while listening
+        listenIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say a word!");
+        //set speech model
+        listenIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        //specify number of results to retrieve
+        listenIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 10);
+
+        try {
+            startActivityForResult(listenIntent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(getActivity(),
+                    "Speech not supported",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == Activity.RESULT_OK && null != data) {
+
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    mNotesEditText.setText(result.get(0));
+                }
+                break;
+            }
+
+        }
+    }
     @Override
     public void onConnected(Bundle bundle) {
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
