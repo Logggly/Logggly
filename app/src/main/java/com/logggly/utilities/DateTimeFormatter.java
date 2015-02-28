@@ -17,7 +17,9 @@ public class DateTimeFormatter {
         String mins =  calendar.get(Calendar.MINUTE) < 10 ?
                 "0"+calendar.get(Calendar.MINUTE):
                 calendar.get(Calendar.MINUTE)+"";
-        return calendar.get(Calendar.HOUR)+":"+
+        String hours = (calendar.get(Calendar.HOUR) == 12 || calendar.get(Calendar.HOUR) == 0) ?
+                "12":calendar.get(Calendar.HOUR)+"";
+        return hours+":"+
                 mins+" "+(calendar.get(Calendar.AM_PM)== Calendar.AM ?"AM":"PM");
 
     }

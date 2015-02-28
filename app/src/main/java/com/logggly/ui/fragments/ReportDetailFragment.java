@@ -22,6 +22,9 @@ import com.logggly.managers.DateTimeManager;
 import com.logggly.models.TaskModel;
 import com.logggly.ui.customviews.CustomViewCreator;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.Calendar;
 
 /**
@@ -80,11 +83,21 @@ TimeFragment.Callback{
         notesEditText.setText(taskModel.getNotes());
 
         if(taskModel.getAdditionalFields() != null){
+            JSONArray reverseJSONArray = new JSONArray();
+            for (int i=taskModel.getAdditionalFields().length()-1, j=0; i >= 0  ; i--){
+                try {
+                    reverseJSONArray.put(j, taskModel.getAdditionalFields().opt(i));
+                    j++;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
             CustomViewCreator.createViewForJSONArray(getActivity(),
                     mParentLayoutForAdditionalFields,
-                    taskModel.getAdditionalFields(),
+                    reverseJSONArray,
                     mParentLayoutForAdditionalFields.getChildCount());
-            mAdditionalFieldsManager.init(taskModel.getAdditionalFields());
+            mAdditionalFieldsManager.init(reverseJSONArray);
         }
 
 

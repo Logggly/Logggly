@@ -41,6 +41,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.logggly.BuildConfig;
 import com.logggly.R;
 import com.logggly.background.services.FetchAddressIntentService;
 import com.logggly.databases.DatabaseContract;
@@ -60,6 +61,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Hafiz Waleed Hussain on 1/28/2015.
@@ -73,10 +76,12 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
 
     public static final String TAG = MainDataFragment.class.getSimpleName();
     private static final int REQ_CODE_SPEECH_INPUT = 10;
+    public static final int ONE_MIN_FROM_MILLIS = 1000 * 60;
     private LocationRequest mLocationRequest;
     private TextView mVoiceStatusTextView;
     private JSONArray mAdditionalFieldJSONArray;
     private AdditionalFieldsManager mAdditionalFieldsManager;
+    private Timer mDateTimeUpdateTimer;
 
     public static final MainDataFragment newInstance(){
         MainDataFragment mainDataFragment = new MainDataFragment();
@@ -108,6 +113,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     private DateTimeManager mDateTimeManager;
     private TagAdapterManager mTagAdapterManager;
 //    private VoiceUtility mVoiceUtility;
+    private Timer mOneSecondTimerScheduler;
 
     private int mCompulsoryViewsCount;
 
@@ -125,7 +131,8 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         mAddressResultReceiver = new AddressResultReceiver(new Handler());
         mCalendar = Calendar.getInstance();
         mDateTimeManager = new DateTimeManager(mCalendar,getActivity().getSupportFragmentManager(),this,this);
-        mTagAdapterManager = new TagAdapterManager(getActivity());
+
+
 //        mVoiceUtility = VoiceUtility.getInstance(getActivity());
     }
 
@@ -133,10 +140,35 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,mLocationRequest,this);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         mGoogleApiClient.disconnect();
-        mTagAdapterManager.destroyLoader();
 //        mVoiceUtility.setCallback(null);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mTagAdapterManager = new TagAdapterManager(getActivity());
+        autoCompleteTagInit();
+    }
+
+    @Override
+    public void onStop() {
+        mTagAdapterManager.destroyLoader();
+        super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mOneSecondTimerScheduler = new Timer();
+        mOneSecondTimerScheduler.schedule(new OneSecondTimer(),1000,1000);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mOneSecondTimerScheduler.cancel();
     }
 
     @Nullable
@@ -160,7 +192,6 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         mIdTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_id_textview);
         mIdTextView.setText((PrefrenceUtility.getTaskCurrentId() + 1) + "");
         mTagEditText = (AutoCompleteTextView) mRootView.findViewById(R.id.FragmentMainData_tag_edittext);
-        autoCompleteTagInit();
         mNotesEditText = (EditText) mRootView.findViewById(R.id.FragmentMainData_notes_edittext);
         mNotesMicButton = (Button) mRootView.findViewById(R.id.FragmentMainData_notes_mic_button);
         mNotesMicButton.setOnClickListener(mNotesMicButtonOnClickListener);
@@ -174,13 +205,13 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         mMetaDateTableRow = (TableRow) mRootView.findViewById(R.id.MainDataFragment_meta_date_tablerow);
         mSetDateTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_set_date_textview);
         mMetaDateTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_meta_date_textview);
-        mSetDateTextView.setOnClickListener(mDateTimeManager.getSetDateButtonOnClickListener());
+//        mSetDateTextView.setOnClickListener(mDateTimeManager.getSetDateButtonOnClickListener());
         setDateTextView();
 
         mMetaTimeTableRow = (TableRow) mRootView.findViewById(R.id.MainDataFragment_meta_time_tablerow);
         mSetTimeTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_set_time_textview);
         mMetaTimeTextView = (TextView) mRootView.findViewById(R.id.FragmentMainData_meta_time_textview);
-        mSetTimeTextView.setOnClickListener(mDateTimeManager.getSetTimeButtonOnClickListener());
+//        mSetTimeTextView.setOnClickListener(mDateTimeManager.getSetTimeButtonOnClickListener());
         setTimeTextView();
 
         return mRootView;
@@ -196,7 +227,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
                 Cursor cursor = getActivity().getContentResolver().query(DatabaseContract.Tags.buildUriForSearchTag(getTagText()), null, null, null, null);
                 if (cursor.getCount() == 0) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle(getString(R.string.new_tag));
+                    builder.setTitle(getString(R.string.new_tag_ok));
 //                    builder.setMessage(getString(R.string.new_tag));
                     builder.setMultiChoiceItems(R.array.additional_fields, new boolean[]{newFieldsIsChecked}, new DialogInterface.OnMultiChoiceClickListener() {
                         @Override
@@ -209,6 +240,8 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
                     mNewTagCreatorAlertDialog = builder.create();
                     mNewTagCreatorAlertDialog.show();
 
+                }else{
+                    tagSelectionHandler(cursor);
                 }
             }
         }
@@ -324,7 +357,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
                 Cursor cursor = getActivity().getContentResolver().query(DatabaseContract.Tags.buildUriForSearchTag(tagText), null, null, null, null);
                 if (cursor.getCount() == 0) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle(getString(R.string.new_tag));
+                    builder.setTitle(getString(R.string.new_tag_ok));
 //                    builder.setMessage(getString(R.string.new_tag));
                     builder.setMultiChoiceItems(R.array.additional_fields,new boolean[]{newFieldsIsChecked},new DialogInterface.OnMultiChoiceClickListener() {
                         @Override
@@ -555,15 +588,15 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         if( mLastLocation == null){
             setAddressTextView(getString(R.string.location_not_available));
             mAddressProgressBar.setVisibility(View.GONE);
-//            if(BuildConfig.DEBUG) {
-//                Location location = new Location(Context.LOCATION_SERVICE);
-//                Double lat = Double.valueOf(0.0);
-//                location.setLatitude(lat);
-//                Double longi = Double.valueOf(0.0);
-//                location.setLongitude(longi);
-//                mLastLocation = location;
-//                startFetchAddressService();
-//            }
+            if(BuildConfig.DEBUG) {
+                Location location = new Location(Context.LOCATION_SERVICE);
+                Double lat = Double.valueOf(0.0);
+                location.setLatitude(lat);
+                Double longi = Double.valueOf(0.0);
+                location.setLongitude(longi);
+                mLastLocation = location;
+                startFetchAddressService();
+            }
         }else{
             startFetchAddressService();
         }
@@ -651,4 +684,18 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         mAddressTextView.setText(resultString);
     }
 
+    private class OneSecondTimer extends TimerTask{
+
+        @Override
+        public void run() {
+            mCalendar = Calendar.getInstance();
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setDateTextView();
+                    setTimeTextView();
+                }
+            });
+        }
+    }
 }

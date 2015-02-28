@@ -6,22 +6,29 @@ import android.view.View;
 
 import com.logggly.R;
 import com.logggly.ui.fragments.PictureCaptureFragment;
+import com.logggly.ui.fragments.PictureShowFragment;
 
 /**
  * Created by Hafiz Waleed Hussain on 2/4/2015.
  */
 public class PictureManager {
 
+    private final String mPath;
     private FragmentManager mFragmentManager;
     private PictureCaptureFragment.Callback mCallback;
 
-    public PictureManager(FragmentManager fragmentManager, PictureCaptureFragment.Callback callback) {
+    public PictureManager(FragmentManager fragmentManager, PictureCaptureFragment.Callback callback, String path) {
         mFragmentManager = fragmentManager;
         mCallback = callback;
+        mPath = path;
     }
 
     public View.OnClickListener getImageViewOnClickListener() {
         return mSetImageViewOnClickListener;
+    }
+
+    public View.OnClickListener getShowImageViewOnClickListener() {
+        return mShowImageViewOnClickListener;
     }
 
 
@@ -38,5 +45,15 @@ public class PictureManager {
         }
     };
 
+    private View.OnClickListener mShowImageViewOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            if( mPath != null && !mPath.isEmpty()) {
+                PictureShowFragment pictureShowFragment = PictureShowFragment.newInstance(mPath);
+                pictureShowFragment.show(mFragmentManager,null);
+            }
+        }
+    };
 
 }

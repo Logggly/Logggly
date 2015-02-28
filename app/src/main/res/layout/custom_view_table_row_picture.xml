@@ -11,12 +11,23 @@ style="@style/MainDataFragmentTableRow"
         android:text="a"
         />
 
+    <LinearLayout
+        style="@style/MainDataFragmentSecondColumn"
+        android:gravity="center"
+        >
+
     <ImageView
         android:id="@+id/CustomView_field"
-        style="@style/MainDataFragmentSecondColumn"
         android:src="@drawable/ic_launcher"
         android:layout_width="@dimen/dp48"
         android:layout_height="@dimen/dp48"
         />
+    <Button
+        android:id="@+id/CustomViewSnapShoot_capture_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Take Snap"
+        />
+    </LinearLayout>
 </TableRow>
 </merge>

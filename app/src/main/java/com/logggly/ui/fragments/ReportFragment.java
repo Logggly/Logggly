@@ -54,6 +54,7 @@ public class ReportFragment extends AbstractLoggglyFragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_report_fragment,container,false);
+        mTagAdapterManager = new TagAdapterManager(getActivity());
         mTagsSpinner = (Spinner) view.findViewById(R.id.FragmentReport_tags_spinner);
         mTagsSpinner.setAdapter(mTagAdapterManager.getAdapter());
         mTagsSpinner.setOnItemSelectedListener(mOnItemSelectedListener);
@@ -62,7 +63,6 @@ public class ReportFragment extends AbstractLoggglyFragment implements
         mTasksListView.setOnItemClickListener(mOnItemClickListener);
         mDeleteAllWithSelectedTagButton = (Button) view.findViewById(R.id.FragmentReport_delete_all_button);
         mDeleteAllWithSelectedTagButton.setOnClickListener(mDeleteAllWithTagOnClickListener);
-        mTagAdapterManager = new TagAdapterManager(getActivity());
         mTagAdapterManager.initLoader();
         getLoaderManager().initLoader(TASK_LOADER,null,this);
         return view;

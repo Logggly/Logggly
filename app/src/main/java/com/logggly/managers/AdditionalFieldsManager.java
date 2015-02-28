@@ -2,6 +2,7 @@ package com.logggly.managers;
 
 import android.content.Context;
 import android.support.v4.app.FragmentManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -64,8 +65,8 @@ public class AdditionalFieldsManager {
                 EditText editText = (EditText) mParentLayout.findViewWithTag(fieldName);
                 String text = jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_DATA);
                 editText.setText(text);
-                mAdditionalFieldAlphaNumericModelHashMap.put(fieldName,
-                        new AdditionalFieldAlphaNumericHandler(mFragmentManager,
+                mAdditionalFieldNumericModelHashMap.put(fieldName,
+                        new AdditionalFieldNumericHandler(mFragmentManager,
                                 headerTextView,
                                 editText));
             }
@@ -97,11 +98,13 @@ public class AdditionalFieldsManager {
             }
             else if(field.equals(mContext.getString(R.string.picture))){
                 ImageView imageView = (ImageView) mParentLayout.findViewWithTag(fieldName);
+                Button takeSnap = (Button) mParentLayout.findViewById(R.id.CustomViewSnapShoot_capture_image);
                 String text = jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_DATA);
                 mAdditionalFieldPictureModelHashMap.put(fieldName,
                         new AdditionalFieldPictureHandler(mFragmentManager,
                                 headerTextView,
                                 imageView,
+                                takeSnap,
                                 text));
 
             }

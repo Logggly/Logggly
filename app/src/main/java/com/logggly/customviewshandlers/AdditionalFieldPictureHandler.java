@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,12 +25,13 @@ public class AdditionalFieldPictureHandler extends AbstractAdditionalField{
     public AdditionalFieldPictureHandler(FragmentManager fragmentManager,
                                          TextView headerTextView,
                                          ImageView imageView,
-                                         String path) {
+                                         Button takeSnap, String path) {
         super(fragmentManager, headerTextView);
         mImageView = imageView;
         mPath = path;
-        mPictureManager = new PictureManager(fragmentManager,mCallback);
-        mImageView.setOnClickListener(mPictureManager.getImageViewOnClickListener());
+        mPictureManager = new PictureManager(fragmentManager,mCallback,mPath);
+        mImageView.setOnClickListener(mPictureManager.getShowImageViewOnClickListener());
+        takeSnap.setOnClickListener(mPictureManager.getImageViewOnClickListener());
         setImageView();
     }
 
