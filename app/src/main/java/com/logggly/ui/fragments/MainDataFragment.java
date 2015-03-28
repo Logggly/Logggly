@@ -2,7 +2,6 @@ package com.logggly.ui.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.speech.RecognizerIntent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -51,6 +49,7 @@ import com.logggly.managers.TagAdapterManager;
 import com.logggly.ui.customviews.CustomViewCreator;
 import com.logggly.utilities.DateTimeFormatter;
 import com.logggly.utilities.PrefrenceUtility;
+import com.logggly.utilities.SpeechUtility;
 import com.logggly.utilities.TimeOfDayUtility;
 import com.logggly.utilities.VoiceUtility;
 
@@ -75,8 +74,8 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
         TimeFragment.Callback{
 
     public static final String TAG = MainDataFragment.class.getSimpleName();
-    private static final int REQ_CODE_SPEECH_INPUT = 10;
     public static final int ONE_MIN_FROM_MILLIS = 1000 * 60;
+    private static final int NOTES_SPEEC_REQUEST = 10;
     private LocationRequest mLocationRequest;
     private TextView mVoiceStatusTextView;
     private JSONArray mAdditionalFieldJSONArray;
@@ -241,7 +240,9 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
                     mNewTagCreatorAlertDialog.show();
 
                 }else{
-                    tagSelectionHandler(cursor);
+                    if(cursor.moveToNext()) {
+                        tagSelectionHandler(cursor);
+                    }
                 }
             }
         }
@@ -538,48 +539,26 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
     private View.OnClickListener mNotesMicButtonOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            promptSpeechInput();
+            SpeechUtility.speechRequest(MainDataFragment.this,NOTES_SPEEC_REQUEST);
         }
     };
 
-    private void promptSpeechInput() {
-
-        //start the speech recognition intent passing required data
-        Intent listenIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        //indicate package
-        listenIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());
-        //message to display while listening
-        listenIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say a word!");
-        //set speech model
-        listenIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        //specify number of results to retrieve
-        listenIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 10);
-
-        try {
-            startActivityForResult(listenIntent, REQ_CODE_SPEECH_INPUT);
-        } catch (ActivityNotFoundException a) {
-            Toast.makeText(getActivity(),
-                    "Speech not supported",
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode) {
-            case REQ_CODE_SPEECH_INPUT: {
-                if (resultCode == Activity.RESULT_OK && null != data) {
-
-                    ArrayList<String> result = data
-                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    mNotesEditText.setText(result.get(0));
+        if( Activity.RESULT_OK == resultCode) {
+            switch (requestCode) {
+                case NOTES_SPEEC_REQUEST: {
+                    if (null != data) {
+                        mNotesEditText.setText(SpeechUtility.parseSpeechAsString(data));
+                    }
+                    break;
                 }
-                break;
-            }
 
+            }
         }
     }
     @Override

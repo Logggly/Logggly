@@ -117,11 +117,23 @@
                    style="@style/MainDataFragmentFirstColumnHeadings"
                    android:text="Notes"/>
 
-               <EditText
-                   android:id="@+id/FragmentReportDetail_notes_edittext"
+               <LinearLayout
                    style="@style/MainDataFragmentSecondColumn"
-                   android:text="Notes"
-                   />
+                   >
+                   <Button
+                       android:layout_width="@dimen/dp36"
+                       android:layout_height="@dimen/dp36"
+                       android:background="@android:drawable/ic_btn_speak_now"
+                       android:id="@+id/FragmentReportDetail_notes_mic_button"
+                       />
+                   <EditText
+                       android:id="@+id/FragmentReportDetail_notes_edittext"
+                       style="@style/MainDataFragmentSecondColumn"
+                       android:text="Notes"
+                       />
+
+               </LinearLayout
+                   >
 
            </TableRow>
 

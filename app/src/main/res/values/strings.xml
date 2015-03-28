@@ -42,6 +42,8 @@
     <!--&lt;!&ndash;<item>Audio</item>&ndash;&gt;-->
     <string name="url">URL</string>
     <string name="enter_numeric_value">Enter numeric value</string>
+    <string name="export">Export</string>
+    <string name="import_">Import</string>
     <!--<item>Documents</item>-->
 
 </resources>

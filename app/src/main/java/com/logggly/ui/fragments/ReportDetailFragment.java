@@ -1,8 +1,10 @@
 package com.logggly.ui.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,6 +23,7 @@ import com.logggly.managers.AdditionalFieldsManager;
 import com.logggly.managers.DateTimeManager;
 import com.logggly.models.TaskModel;
 import com.logggly.ui.customviews.CustomViewCreator;
+import com.logggly.utilities.SpeechUtility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,11 +36,14 @@ import java.util.Calendar;
 public class ReportDetailFragment extends Fragment implements DateFragment.Callback,
 TimeFragment.Callback{
 
+    private static final int NOTES_SPEEC_REQUEST = 10;
+
     private TaskModel taskModel;
     private TextView dateTextView;
     private TextView timeTextView;
     private EditText notesEditText;
     private TableLayout mParentLayoutForAdditionalFields;
+    private Button mNotesMicButton;
     private AdditionalFieldsManager mAdditionalFieldsManager;
 
     public static ReportDetailFragment newInstance(TaskModel taskModel){
@@ -71,6 +77,8 @@ TimeFragment.Callback{
         timeTextView.setOnClickListener(dateTimeManager.getSetTimeButtonOnClickListener());
         TextView addressTextView= (TextView) view.findViewById(R.id.FragmentReportDetail_address_textview);
         notesEditText = (EditText) view.findViewById(R.id.FragmentReportDetail_notes_edittext);
+        mNotesMicButton = (Button) view.findViewById(R.id.FragmentReportDetail_notes_mic_button);
+        mNotesMicButton.setOnClickListener(mNotesMicButtonOnClickListener);
 
         final Button deleteButton = (Button) view.findViewById(R.id.FragmentReportDetail_delete_button);
         final Button updateButton = (Button) view.findViewById(R.id.FragmentReportDetail_update_button);
@@ -155,4 +163,32 @@ TimeFragment.Callback{
         taskModel.setCalendar(mCalendar);
         timeTextView.setText(taskModel.getTime());
     }
+
+    private View.OnClickListener mNotesMicButtonOnClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            SpeechUtility.speechRequest(ReportDetailFragment.this, NOTES_SPEEC_REQUEST);
+        }
+    };
+
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if( Activity.RESULT_OK == resultCode) {
+            switch (requestCode) {
+                case NOTES_SPEEC_REQUEST: {
+                    if (null != data) {
+                        notesEditText.setText(SpeechUtility.parseSpeechAsString(data));
+                    }
+                    break;
+                }
+
+            }
+        }
+    }
+
 }
