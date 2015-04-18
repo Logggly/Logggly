@@ -21,9 +21,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class DurationDialogFragment extends DialogFragment{
 
+    private static final String TAG_NAME = "tag_name";
 
-    public static final DurationDialogFragment newInstance(){
+    private String mTagName;
+
+    public static final DurationDialogFragment newInstance(String tagName){
+
         DurationDialogFragment durationDialogFragment = new DurationDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(TAG_NAME,tagName);
+        durationDialogFragment.setArguments(bundle);
         return durationDialogFragment;
     }
 
@@ -37,6 +44,12 @@ public class DurationDialogFragment extends DialogFragment{
 
     public void setCallback(Callback callback) {
         mCallback = callback;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mTagName = getArguments().getString(TAG_NAME);
     }
 
     @NonNull

@@ -323,6 +323,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
 
     private void tagSelectionHandler(Cursor cursor) {
         String additionalFields = cursor.getString(cursor.getColumnIndex(DatabaseContract.Tags.COLUMN_ADDITIONAL_FIELDS));
+        String tagName = mTagEditText.getText().toString().trim();
         if(additionalFields!=null && !additionalFields.isEmpty()) {
             try {
                 mAdditionalFieldJSONArray = new JSONArray(additionalFields);
@@ -331,7 +332,7 @@ public class MainDataFragment extends AbstractLoggglyFragment implements
             }
             CustomViewCreator.createViewForJSONArray(getActivity(),
                     mTableLayout, mAdditionalFieldJSONArray, mCompulsoryViewsCount);
-            mAdditionalFieldsManager.init(mAdditionalFieldJSONArray);
+            mAdditionalFieldsManager.init(mAdditionalFieldJSONArray, tagName);
         }
     }
 

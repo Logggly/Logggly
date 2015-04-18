@@ -1,7 +1,6 @@
 package com.logggly.factories;
 
 import android.content.Context;
-import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -76,7 +75,7 @@ public class CustomViewFactory {
                 parent);
 
         EditText editText = (EditText) viewGroup.findViewById(R.id.CustomView_field);
-        editText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
+//        editText.setInputType(InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL);
         editText.setKeyListener(DigitsKeyListener.getInstance("0123456789.,-"));
 //        editText.setText(jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_TYPE));
         editText.setId(0);

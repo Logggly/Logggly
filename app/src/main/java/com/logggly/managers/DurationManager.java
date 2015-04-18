@@ -14,13 +14,15 @@ public class DurationManager {
 //    private Calendar mEndCalendarReference;
     private FragmentManager mFragmentManager;
     private DurationDialogFragment.Callback mCallback;
+    private String mTagName;
 
     public DurationManager(FragmentManager fragmentManager,
-                           DurationDialogFragment.Callback callback) {
+                           DurationDialogFragment.Callback callback, String tagName) {
 //        mStartCalendarReference = startCalendarReference;
 //        mEndCalendarReference = endCalendarReference;
         mCallback = callback;
         mFragmentManager = fragmentManager;
+        mTagName = tagName;
     }
 
     public View.OnClickListener getDurationOnClickListener() {
@@ -29,7 +31,7 @@ public class DurationManager {
     private View.OnClickListener mSetDurationOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            DurationDialogFragment durationDialogFragment = DurationDialogFragment.newInstance();
+            DurationDialogFragment durationDialogFragment = DurationDialogFragment.newInstance(mTagName);
             durationDialogFragment.setCallback(mCallback);
             durationDialogFragment.show(mFragmentManager, null);
         }

@@ -105,7 +105,7 @@ TimeFragment.Callback{
                     mParentLayoutForAdditionalFields,
                     reverseJSONArray,
                     mParentLayoutForAdditionalFields.getChildCount());
-            mAdditionalFieldsManager.init(reverseJSONArray);
+            mAdditionalFieldsManager.init(reverseJSONArray, taskModel.getTag());
         }
 
 

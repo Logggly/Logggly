@@ -45,7 +45,7 @@ public class AdditionalFieldsManager {
         mFragmentManager = fragmentManager;
     }
 
-    public void init(JSONArray additionalFieldJSONArray) {
+    public void init(JSONArray additionalFieldJSONArray, String tagName) {
         for (int i = 0 ; i < additionalFieldJSONArray.length();i++){
             JSONObject jsonObject = additionalFieldJSONArray.optJSONObject(i);
             String field = jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_TYPE);
@@ -93,7 +93,8 @@ public class AdditionalFieldsManager {
                                 headerTextView,
                                 textView,
                                 startDate,
-                                endDate));
+                                endDate,
+                                tagName));
 
             }
             else if(field.equals(mContext.getString(R.string.picture))){

@@ -114,7 +114,7 @@ public class CSVUtility {
                 }
                 data.put(HEADER[0], taskModel.getId());
                 data.put(HEADER[1], taskModel.getTag());
-                data.put(HEADER[2],taskModel.getDate());
+                data.put(HEADER[2],taskModel.getDate()+" "+taskModel.getTime());
                 data.put(HEADER[3],taskModel.getLocation());
                 data.put(HEADER[4],taskModel.getNotes());
 
@@ -127,7 +127,8 @@ public class CSVUtility {
                             jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_TYPE);
                     String fieldData =
                             jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_DATA);
-                    data.put(fieldName+"("+fieldType+")",fieldData);
+//                    data.put(fieldName+"("+fieldType+")",fieldData);
+                    data.put(fieldName,fieldData);
                 }
                 mapWriter.write(data,headerArray,cellProcessorsArray);
             }
@@ -150,7 +151,8 @@ public class CSVUtility {
                     jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_NAME);
             String fieldType =
                     jsonObject.optString(DatabaseContract.AdditionalFieldsJSONManager.FIELD_TYPE);
-            header.add(fieldName+"("+fieldType+")");
+//            header.add(fieldName+"("+fieldType+")");
+            header.add(fieldName);
             cellProcessor.add(new Optional());
         }
     }

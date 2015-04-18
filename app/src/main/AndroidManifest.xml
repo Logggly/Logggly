@@ -3,9 +3,9 @@
     package="com.logggly" >
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".LoggglyApplication"
@@ -14,10 +14,9 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.logggly.ui.activities.MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,13 +25,18 @@
         </activity>
 
         <service
-            android:name="com.logggly.background.services.FetchAddressIntentService"
+            android:name=".background.services.FetchAddressIntentService"
             android:exported="false" >
         </service>
 
         <provider
-            android:authorities="com.logggly"
-            android:name=".databases.contentprovider.LoggglyContentProvider"/>
+            android:name=".databases.contentprovider.LoggglyContentProvider"
+            android:authorities="com.logggly" />
+
+        <service
+            android:name=".background.services.TimerManagerNotificationService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

@@ -25,12 +25,12 @@ public class AdditionalFieldDurationHandler extends AbstractAdditionalField{
                                           TextView headerTextView,
                                           TextView textView,
                                           Calendar startDate,
-                                          Calendar endDate) {
+                                          Calendar endDate, String tagName) {
         super(fragmentManager, headerTextView);
         mTextView = textView;
         mStartDate = startDate;
         mEndDate = endDate;
-        mDurationManager = new DurationManager(fragmentManager,mCallback);
+        mDurationManager = new DurationManager(fragmentManager,mCallback,tagName);
         mTextView.setOnClickListener(mDurationManager.getDurationOnClickListener());
         setTimeTextView();
     }
